@@ -61,17 +61,13 @@ public class ItemTransformer implements IClassTransformer {
 	public static final String[] namesOb = new String[]{"/", "a", "sa", "a",
 		"bny", "xk", "h", "al", "a", "ro", "e", "b_", "yz", "azt", "h", "R", "bjk", "a", "a", "c"};
 	
-	public static String patchT(String input, boolean obfuscated)
-	{
-		if(obfuscated)
-			input = input.replace("health", "field_70291_e");
+	public static String patchT(String input, boolean obfuscated) {
+		if (obfuscated) input = input.replace("health", "field_70291_e");
 		return input;
 	}
 	
-	public static String patch(String input)
-	{
-		for(int zahl = 0; zahl < names.length; zahl++)
-			input = input.replace(names[zahl], namesOb[zahl]);
+	public static String patch(String input) {
+		for(int zahl = 0; zahl < names.length; zahl++) input = input.replace(names[zahl], namesOb[zahl]);
 		return input;
 	}
 	
@@ -81,10 +77,8 @@ public class ItemTransformer implements IClassTransformer {
 			System.out.println("[ItemPhysic] Patching " + arg0);
 			arg2 = replaceMethodDoRender(arg0, arg2, ItemPatchingLoader.location, !arg0.contains("net.minecraft.client.renderer.entity.RenderItem"));
 		}
-		if(!isLite)
-		{
-			if(arg0.equals("xk") | arg0.equals("net.minecraft.entity.item.EntityItem"))
-			{
+		if (!isLite) {
+			if (arg0.equals("xk") | arg0.equals("net.minecraft.entity.item.EntityItem")) {
 				System.out.println("[ItemPhysic] Patching " + arg0);
 				arg2 = replaceMethodOnUpdate(arg0, arg2, ItemPatchingLoader.location, !arg0.equals("net.minecraft.entity.item.EntityItem"));
 				arg2 = addMethodIsBurning(arg0, arg2, ItemPatchingLoader.location, !arg0.equals("net.minecraft.entity.item.EntityItem"));
@@ -92,8 +86,7 @@ public class ItemTransformer implements IClassTransformer {
 				arg2 = replaceMethodAttack(arg0, arg2, ItemPatchingLoader.location, !arg0.equals("net.minecraft.entity.item.EntityItem"));
 			}
 			
-			if(arg0.equals("bjk") | arg0.equals("net.minecraft.client.entity.EntityClientPlayerMP"))
-			{
+			if (arg0.equals("bjk") | arg0.equals("net.minecraft.client.entity.EntityClientPlayerMP")) {
 				System.out.println("[ItemPhysic] Patching " + arg0);
 				arg2 = removeDrop(arg0, arg2, ItemPatchingLoader.location, !arg0.equals("net.minecraft.client.entity.EntityClientPlayerMP"));
 			}
@@ -101,14 +94,12 @@ public class ItemTransformer implements IClassTransformer {
 		return arg2;
 	}
 	
-	public byte[] removeDrop(String name, byte[] bytes, File location, boolean obfuscated)
-	{
+	public byte[] removeDrop(String name, byte[] bytes, File location, boolean obfuscated) {
 		String invokeName = "dropOneItem";
 		String invokeDESC = "(Z)Lnet/minecraft/entity/item/EntityItem;";
 		
 		
-		if(obfuscated == true)
-		{
+		if (obfuscated == true) {
 			invokeName = patch(invokeName);
 			invokeDESC = patch(invokeDESC);
 		}
@@ -118,11 +109,9 @@ public class ItemTransformer implements IClassTransformer {
 		classReader.accept(classNode, 0);
 		
 		Iterator<MethodNode> methods = classNode.methods.iterator();
-		while(methods.hasNext())
-		{
+		while(methods.hasNext()) {
 			MethodNode m = methods.next();
-			if ((m.name.equals(invokeName) && m.desc.equals(invokeDESC)))
-			{
+			if ((m.name.equals(invokeName) && m.desc.equals(invokeDESC))) {
 				m.instructions.clear();
 				m.instructions.add(new InsnNode(ACONST_NULL));
 				m.instructions.add(new InsnNode(ARETURN));
@@ -134,16 +123,14 @@ public class ItemTransformer implements IClassTransformer {
 		return writer.toByteArray();
 	}
 	
-	public byte[] addMethodSetPosition(String name, byte[] bytes, File location, boolean obfuscated)
-	{
+	public byte[] addMethodSetPosition(String name, byte[] bytes, File location, boolean obfuscated) {
 		String targetMethodName = "setPositionAndRotation2";
 		String targetDESC = "(DDDFFI)V";
 		String entity = "net/minecraft/entity/Entity";
 		String item = "(Lnet/minecraft/entity/item/EntityItem;D)V";
 		String item2 = "(Lnet/minecraft/entity/item/EntityItem;)V";
 		
-		if(obfuscated == true)
-		{
+		if (obfuscated == true) {
 			targetMethodName = patch(targetMethodName);
 			targetDESC = patch(targetDESC);
 			entity = patch(entity);
@@ -186,13 +173,11 @@ public class ItemTransformer implements IClassTransformer {
 		return writer.toByteArray();
 	}
 	
-	public byte[] addMethodIsBurning(String name, byte[] bytes, File location, boolean obfuscated)
-	{
+	public byte[] addMethodIsBurning(String name, byte[] bytes, File location, boolean obfuscated) {
 		String targetMethodName = "isBurning";
 		String targetDESC = "(Lnet/minecraft/entity/item/EntityItem;)Z";
 		
-		if(obfuscated == true)
-		{
+		if (obfuscated == true) {
 			targetMethodName = patch(targetMethodName);
 			targetDESC = patch(targetDESC);
 		}
@@ -217,16 +202,14 @@ public class ItemTransformer implements IClassTransformer {
 		return writer.toByteArray();
 	}
 
-	public byte[] replaceMethodDoRender(String name, byte[] bytes, File location, boolean obfuscated)
-	{
+	public byte[] replaceMethodDoRender(String name, byte[] bytes, File location, boolean obfuscated) {
 		String targetMethodName = "doRender";
 		String targetDESC = "(Lnet/minecraft/entity/Entity;DDDFF)V";
 		String newDESC = "(Lnet/minecraft/entity/Entity;DDDFF)V";
 		String targetVar = "renderWithColor";
 		
 		
-		if(obfuscated == true)
-		{
+		if (obfuscated == true) {
 			targetMethodName = patch(targetMethodName);
 			targetDESC = patch(targetDESC);
 			newDESC = patch(newDESC);
@@ -238,21 +221,17 @@ public class ItemTransformer implements IClassTransformer {
 		classReader.accept(classNode, 0);
 		
 		Iterator<MethodNode> methods = classNode.methods.iterator();
-		while(methods.hasNext())
-		{
+		while(methods.hasNext()) {
 			MethodNode m = methods.next();
-			if ((m.name.equals(targetMethodName) && m.desc.equals(targetDESC)))
-			{
+			if ((m.name.equals(targetMethodName) && m.desc.equals(targetDESC))) {
 				AbstractInsnNode currentNode = null;
 		
 				@SuppressWarnings("unchecked")
 				Iterator<AbstractInsnNode> iter = m.instructions.iterator();
 				
-				while (iter.hasNext())
-				{
+				while (iter.hasNext()) {
 					currentNode = iter.next();
-					if (currentNode instanceof MethodInsnNode)
-					{
+					if (currentNode instanceof MethodInsnNode) {
 						/*m.instructions.insertBefore(currentNode, new VarInsnNode(ALOAD, 0));
 						m.instructions.insertBefore(currentNode, new FieldInsnNode(Opcodes.GETFIELD, name.replace(".", "/"), targetVar, "Z"));*/
 						((MethodInsnNode) currentNode).desc = newDESC;
@@ -271,8 +250,7 @@ public class ItemTransformer implements IClassTransformer {
 		return writer.toByteArray();
 	}
 	
-	public byte[] replaceMethodAttack(String name, byte[] bytes, File location, boolean obfuscated)
-	{
+	public byte[] replaceMethodAttack(String name, byte[] bytes, File location, boolean obfuscated) {
 		String targetMethodName = "attackEntityFrom";
 		String targetDESC = "(Lnet/minecraft/util/DamageSource;F)Z";
 		String targetNewDESC = "(Lnet/minecraft/entity/item/EntityItem;Lnet/minecraft/util/DamageSource;F)Z";
@@ -288,8 +266,7 @@ public class ItemTransformer implements IClassTransformer {
 		//String newMethodDESC2 = "(Lnet/minecraft/entity/item/EntityItem;)Lnet/minecraft/util/AxisAlignedBB;";
 		//String newMethodDESC3 = "(Lnet/minecraft/entity/Entity;)Lnet/minecraft/util/AxisAlignedBB;";
 		
-		if(obfuscated == true)
-		{
+		if (obfuscated == true) {
 			targetMethodName = patch(targetMethodName);
 			targetDESC = patch(targetDESC);
 			fieldName = patch(fieldName);
@@ -310,20 +287,14 @@ public class ItemTransformer implements IClassTransformer {
 		classReader.accept(classNode, 0);
 		
 		Iterator<FieldNode> fields = classNode.fields.iterator();
-		while(fields.hasNext())
-		{
+		while(fields.hasNext()) {
 			FieldNode f = fields.next();		
-			if(f.name.equals(fieldName))
-			{
-				f.access = ACC_PUBLIC;
-			}
+			if (f.name.equals(fieldName)) f.access = ACC_PUBLIC;
 		}
 		Iterator<MethodNode> methods = classNode.methods.iterator();
-		while(methods.hasNext())
-		{
+		while(methods.hasNext()) {
 			MethodNode m = methods.next();
-			if ((m.name.equals(targetMethodName) && m.desc.equals(targetDESC)))
-			{
+			if ((m.name.equals(targetMethodName) && m.desc.equals(targetDESC))) {
 				m.instructions.clear();
 				
 				m.instructions.add(new VarInsnNode(ALOAD, 0));
@@ -332,8 +303,7 @@ public class ItemTransformer implements IClassTransformer {
 				m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/creativemd/itemphysic/physics/ServerPhysic", "attackEntityFrom", targetNewDESC));
 				m.instructions.add(new InsnNode(IRETURN));
 			}
-			if (m.name.equals(targetMethodName2) && m.desc.equals(targetDESC2))
-			{
+			if (m.name.equals(targetMethodName2) && m.desc.equals(targetDESC2)) {
 				m.instructions.clear();
 				m.instructions.add(new VarInsnNode(ALOAD, 0));
 				m.instructions.add(new VarInsnNode(ALOAD, 1));
@@ -372,13 +342,11 @@ public class ItemTransformer implements IClassTransformer {
 		return writer.toByteArray();
 	}
 	
-	public byte[] replaceMethodOnUpdate(String name, byte[] bytes, File location, boolean obfuscated)
-	{
+	public byte[] replaceMethodOnUpdate(String name, byte[] bytes, File location, boolean obfuscated) {
 		String targetMethodName = "onUpdate";
 		String targetDESC = "(Lnet/minecraft/entity/item/EntityItem;)V";
 		
-		if(obfuscated == true)
-		{
+		if (obfuscated == true) {
 			targetMethodName = patch(targetMethodName);
 			targetDESC = patch(targetDESC);
 		}
@@ -387,8 +355,7 @@ public class ItemTransformer implements IClassTransformer {
 		ClassReader classReader = new ClassReader(bytes);
 		classReader.accept(classNode, 0);
 		Iterator<MethodNode> methods = classNode.methods.iterator();
-		while(methods.hasNext())
-		{
+		while(methods.hasNext()) {
 			MethodNode m = methods.next();
 			if ((m.name.equals(targetMethodName) && m.desc.equals("()V")))
 			{

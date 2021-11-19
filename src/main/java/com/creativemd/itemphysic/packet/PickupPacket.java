@@ -13,10 +13,7 @@ public class PickupPacket extends CreativeCorePacket{
 	public Vec3 look;
 	public Vec3 pos;
 	
-	public PickupPacket()
-	{
-		
-	}
+	public PickupPacket() {}
 	
 	public PickupPacket(Vec3 look, Vec3 pos) {
 		this.look = look;
@@ -36,18 +33,14 @@ public class PickupPacket extends CreativeCorePacket{
 	}
 
 	@Override
-	public void executeClient(EntityPlayer player) {
-		
-	}
+	public void executeClient(EntityPlayer player) {}
 
 	@Override
 	public void executeServer(EntityPlayer player) {
 		EventHandler.cancel = true;
 		EntityItem entity = EventHandler.getEntityItem(player, look, pos);
-		if(entity != null)
-		{
-			entity.interactFirst(player);
-		}
+
+		if (entity != null) entity.interactFirst(player);
 	}
 
 }

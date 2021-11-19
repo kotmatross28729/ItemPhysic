@@ -13,8 +13,7 @@ public class ItemConfigSystem {
 	public static ModTab tab = new ModTab("ItemPhysic", new ItemStack(Items.feather));
 	public static ItemPhysicBranch branch;
 	
-	public static void loadConfig()
-	{
+	public static void loadConfig() {
 		branch = new ItemPhysicBranch("general");
 		tab.addBranch(branch);
 		TabRegistry.registerModTab(tab);

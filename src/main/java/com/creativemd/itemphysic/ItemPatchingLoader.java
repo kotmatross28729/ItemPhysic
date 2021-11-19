@@ -10,7 +10,6 @@ import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 public class ItemPatchingLoader implements IFMLLoadingPlugin {
 	
 	public static File location;
-
 	
 	@Override
 	public String[] getASMTransformerClass() {

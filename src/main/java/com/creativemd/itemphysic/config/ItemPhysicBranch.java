@@ -13,7 +13,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
-public class ItemPhysicBranch extends ConfigBranch{
+public class ItemPhysicBranch extends ConfigBranch {
 
 	public ItemPhysicBranch(String name) {
 		super(name);
@@ -26,9 +26,7 @@ public class ItemPhysicBranch extends ConfigBranch{
 	}
 
 	@Override
-	public void loadCore() {
-		
-	}
+	public void loadCore() {}
 
 	@Override
 	public void createConfigSegments() {
