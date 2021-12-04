@@ -44,7 +44,8 @@ public class ServerPhysic {
 	public static ArrayList burnItem = new ArrayList(); //Can be Material, Block, Item, Stack, String(Contains)
 
     public static Item getItem(String ItemID) {
-        // This function will return an item from it's string ID (ex: minecraft:blaze_rod).
+        // This function will return an item from its string ID (ex: minecraft:blaze_rod).
+        // If the modId is omitted, it will look directly in the minecraft namespace.
         String modId = "minecraft";
         String name = null;
 
@@ -52,14 +53,21 @@ public class ServerPhysic {
             String[] nameSplit = ItemID.split(":");
             modId = nameSplit[0];
             name = nameSplit[1];
-        }
+        } else name = ItemID;
 
         return GameRegistry.findItem(modId, name);
     }
 
 	public static void loadItemList() {
-        for (int i = 0; i < ItemDummyContainer.floatList.length; i += 1) swimItem.add(getItem(ItemDummyContainer.floatList[i]));
-		for (int i = 0; i < ItemDummyContainer.burnList.length; i += 1) burnItem.add(getItem(ItemDummyContainer.burnList[i]));
+        for (int i = 0; i < ItemDummyContainer.floatList.length; i += 1) {
+            Item x = getItem(ItemDummyContainer.floatList[i]);
+            if (x != null) swimItem.add(x);
+        }
+
+		for (int i = 0; i < ItemDummyContainer.burnList.length; i += 1) {
+            Item x = getItem(ItemDummyContainer.burnList[i]);
+            if (x != null) burnItem.add(x);
+        }
 	}
 	
 	public static void update(EntityItem item) {
@@ -170,7 +178,7 @@ public class ServerPhysic {
         if (below) j--;
         int k = MathHelper.floor_double(item.posZ);
         Block block = item.worldObj.getBlock(i, j, k);
-        
+
         Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
         if (fluid == null && block instanceof IFluidBlock) fluid = ((IFluidBlock)block).getFluid();
         else if (block instanceof BlockLiquid) fluid = FluidRegistry.WATER;
