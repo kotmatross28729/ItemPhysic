@@ -71,10 +71,12 @@ processResources {
 }
 
 jar {
+
+    //The following section is here in order to modfiy the META-INF folder to work with the coremod.
     manifest {
-        attributes 'FMLCorePlugin': 'com.creativemd.creativecore.core.CreativePatchingLoader'
-        attributes 'FMLCorePluginContainsFMLMod': 'com.creativemd.creativecore.CreativeCore'
+        attributes 'FMLCorePlugin': 'com.creativemd.itemphysic.ItemPatchingLoader'
     }
+
     from {
         configurations.includeInJar.collect { it.isDirectory() ? it : zipTree(it) }
     }
