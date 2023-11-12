@@ -1,10 +1,10 @@
 [
 {
-  "modid": "itemphysic",
-  "name": "ItemPhysics",
+  "modid": "${modId}",
+  "name": "${modName}",
   "description": "Example placeholder mod.",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
+  "version": "${modVersion}",
+  "mcversion": "${minecraftVersion}",
   "url": "",
   "updateUrl": "",
   "authorList": ["ExampleDude"],
