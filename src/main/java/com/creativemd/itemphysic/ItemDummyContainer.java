@@ -121,7 +121,7 @@ public class ItemDummyContainer extends DummyModContainer {
 	// We define the mod properties
 	public static final String MODID = "itemphysic";
 	public static final String NAME = "ItemPhysic";
-	public static final String VERSION = "1.1.6";
+	public static final String VERSION = "1.1.6" + " kotmatross edition";
 	public static final String DESCRIPTION = "A minecraft mod that adds physics to thrown items.";
 	public static final String CREDITS = "CreativeMD";
 	public static final String URL = "";
@@ -143,7 +143,7 @@ public class ItemDummyContainer extends DummyModContainer {
 		meta.screenshots = new String[0];
 		meta.logoFile = "";
 	}
-	
+
 	@Override
 	public boolean registerBus(EventBus bus, LoadController controller) {
 		bus.register(this);
@@ -152,10 +152,10 @@ public class ItemDummyContainer extends DummyModContainer {
 
 	@Subscribe
 	public void modConstruction(FMLConstructionEvent evt){}
-	
+
 	@Subscribe
 	public void init(FMLInitializationEvent evt) {
-		
+
 		if (!ItemTransformer.isLite) {
 			MinecraftForge.EVENT_BUS.register(new EventHandler());
 			FMLCommonHandler.instance().bus().register(new EventHandler());
@@ -165,20 +165,20 @@ public class ItemDummyContainer extends DummyModContainer {
 			FMLCommonHandler.instance().bus().register(new EventHandlerLite());
 		}
 	}
-	
+
 	@Method(modid = "creativecore")
 	public static void initFull() {
 		CreativeCorePacket.registerPacket(DropPacket.class, "IPDrop");
 		CreativeCorePacket.registerPacket(PickupPacket.class, "IPPick");
-		
+
 		try {
 			if (!ItemTransformer.isLite && Loader.isModLoaded("ingameconfigmanager")) ItemConfigSystem.loadConfig();
 		} catch(Exception e) {}
 	}
-	
+
 	public static Configuration config;
 	public static float rotateSpeed = 1.0F;
-	
+
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent evt) {
 		// The following overrides the mcmod.info file!
@@ -246,13 +246,13 @@ public class ItemDummyContainer extends DummyModContainer {
 		config.save();
 		ServerPhysic.loadItemList();
 	}
-	
+
 	@Subscribe
 	@SideOnly(Side.CLIENT)
 	public void onRender(RenderTickEvent evt) {
 		ClientPhysic.tick = System.nanoTime();
 	}
-	
+
 	@Subscribe
 	public void postInit(FMLPostInitializationEvent evt) {}
 
