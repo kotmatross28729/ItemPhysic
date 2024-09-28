@@ -40,7 +40,7 @@ public class ItemDummyContainer extends DummyModContainer {
 	// We define the mod properties
 	public static final String MODID = "itemphysic";
 	public static final String NAME = "ItemPhysic";
-	public static final String VERSION = "1.1.8" + " kotmatross edition";
+	public static final String VERSION = "1.1.9" + " kotmatross edition";
 	public static final String DESCRIPTION = "A minecraft mod that adds physics to thrown items.";
 	public static final String CREDITS = "CreativeMD";
 	public static final String URL = "";
@@ -179,24 +179,29 @@ public class ItemDummyContainer extends DummyModContainer {
             String modId;
             String itemNameOnly;
             int metadata = 0;
+            boolean ignoremeta = false;
 
             String[] parts = itemName.split(":");
             if (parts.length >= 2) {
                 modId = parts[0];
                 itemNameOnly = parts[1];
                 if (parts.length == 3) {
+                    try {
                         metadata = Integer.parseInt(parts[2]);
+                    } catch (NumberFormatException e) {
+                        ignoremeta = Boolean.parseBoolean(parts[2]);
+                    }
                 }
                 Item item = GameRegistry.findItem(modId, itemNameOnly);
                 if (item != null) {
-                    ItemsWithMetaRegistryBurn.ItemWithMetaBurn Item = new ItemsWithMetaRegistryBurn.ItemWithMetaBurn(item, metadata);
+                    ItemsWithMetaRegistryBurn.ItemWithMetaBurn Item = new ItemsWithMetaRegistryBurn.ItemWithMetaBurn(item, metadata, ignoremeta);
                     ItemsWithMetaRegistryBurn.BurnItems.add(Item);
                 }
-            } else if(parts.length == 1) {
+            } else if(parts.length >= 1) {
                 List<String> oredictNames = Arrays.asList(OreDictionary.getOreNames());
                 if (oredictNames.contains(itemName)) {
                     for (ItemStack oreStack : OreDictionary.getOres(itemName)) {
-                        ItemsWithMetaRegistryBurn.ItemWithMetaBurn Item = new ItemsWithMetaRegistryBurn.ItemWithMetaBurn(oreStack.getItem(), oreStack.getItemDamage());
+                        ItemsWithMetaRegistryBurn.ItemWithMetaBurn Item = new ItemsWithMetaRegistryBurn.ItemWithMetaBurn(oreStack.getItem(), oreStack.getItemDamage(), ignoremeta);
                         ItemsWithMetaRegistryBurn.BurnItems.add(Item);
                     }
                 }
@@ -206,24 +211,29 @@ public class ItemDummyContainer extends DummyModContainer {
             String modId;
             String itemNameOnly;
             int metadata = 0;
+            boolean ignoremeta = false;
 
             String[] parts = itemName.split(":");
             if (parts.length >= 2) {
                 modId = parts[0];
                 itemNameOnly = parts[1];
                 if (parts.length == 3) {
-                    metadata = Integer.parseInt(parts[2]);
+                    try {
+                        metadata = Integer.parseInt(parts[2]);
+                    } catch (NumberFormatException e) {
+                        ignoremeta = Boolean.parseBoolean(parts[2]);
+                    }
                 }
                 Item item = GameRegistry.findItem(modId, itemNameOnly);
                 if (item != null) {
-                    ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(item, metadata);
+                    ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(item, metadata, ignoremeta);
                     ItemsWithMetaRegistryFloat.FloatItems.add(Item);
                 }
             } else if(parts.length == 1) {
                 List<String> oredictNames = Arrays.asList(OreDictionary.getOreNames());
                 if (oredictNames.contains(itemName)) {
                     for (ItemStack oreStack : OreDictionary.getOres(itemName)) {
-                        ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage());
+                        ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage(), ignoremeta);
                         ItemsWithMetaRegistryFloat.FloatItems.add(Item);
                     }
                 }

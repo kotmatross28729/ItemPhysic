@@ -376,15 +376,27 @@ public class ServerPhysic {
             if(!ItemDummyContainer.invertFloatList) {
                 swim = false;
                 for (ItemsWithMetaRegistryFloat.ItemWithMetaFloat itemWithMetaFloat : ItemsWithMetaRegistryFloat.FloatItems) {
-                    if(stack.getItem() == itemWithMetaFloat.item && stack.getItemDamage() == itemWithMetaFloat.metadata){
-                        swim = true;
+                    if(!itemWithMetaFloat.ignoremeta) {
+                        if(stack.getItem() == itemWithMetaFloat.item && stack.getItemDamage() == itemWithMetaFloat.metadata){
+                            swim = true;
+                        }
+                    } else {
+                        if(stack.getItem() == itemWithMetaFloat.item){
+                            swim = true;
+                        }
                     }
                 }
             } else {
                 swim = true;
                 for (ItemsWithMetaRegistryFloat.ItemWithMetaFloat itemWithMetaFloat : ItemsWithMetaRegistryFloat.FloatItems) {
-                    if(stack.getItem() == itemWithMetaFloat.item && stack.getItemDamage() == itemWithMetaFloat.metadata){
-                        swim = false;
+                    if(!itemWithMetaFloat.ignoremeta) {
+                        if(stack.getItem() == itemWithMetaFloat.item && stack.getItemDamage() == itemWithMetaFloat.metadata) {
+                            swim = false;
+                        }
+                    } else {
+                        if(stack.getItem() == itemWithMetaFloat.item){
+                            swim = false;
+                        }
                     }
                 }
             }
@@ -398,15 +410,27 @@ public class ServerPhysic {
             if(!ItemDummyContainer.invertBurnList) {
                 burn = true;
                 for (ItemsWithMetaRegistryBurn.ItemWithMetaBurn itemWithMetaBurn : ItemsWithMetaRegistryBurn.BurnItems) {
-                    if(stack.getItem() == itemWithMetaBurn.item && stack.getItemDamage() == itemWithMetaBurn.metadata) {
-                        burn = false;
+                    if(!itemWithMetaBurn.ignoremeta) {
+                        if(stack.getItem() == itemWithMetaBurn.item && stack.getItemDamage() == itemWithMetaBurn.metadata) {
+                            burn = false;
+                        }
+                    } else {
+                        if(stack.getItem() == itemWithMetaBurn.item) {
+                            burn = false;
+                        }
                     }
                 }
             } else {
                 burn = false;
                 for (ItemsWithMetaRegistryBurn.ItemWithMetaBurn itemWithMetaBurn : ItemsWithMetaRegistryBurn.BurnItems) {
-                    if(stack.getItem() == itemWithMetaBurn.item && stack.getItemDamage() == itemWithMetaBurn.metadata) {
-                        burn = true;
+                    if(!itemWithMetaBurn.ignoremeta) {
+                        if(stack.getItem() == itemWithMetaBurn.item && stack.getItemDamage() == itemWithMetaBurn.metadata) {
+                            burn = true;
+                        }
+                    } else {
+                        if(stack.getItem() == itemWithMetaBurn.item) {
+                            burn = true;
+                        }
                     }
                 }
             }
