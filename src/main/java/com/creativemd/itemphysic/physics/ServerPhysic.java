@@ -1,18 +1,11 @@
 package com.creativemd.itemphysic.physics;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-
 import com.creativemd.itemphysic.ItemDummyContainer;
 import com.creativemd.itemphysic.ItemTransformer;
-
+import com.creativemd.itemphysic.list.ItemsWithMetaRegistryBurn;
+import com.creativemd.itemphysic.list.ItemsWithMetaRegistryFloat;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -21,10 +14,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.AchievementList;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,59 +24,62 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.oredict.OreDictionary;
-import org.apache.logging.log4j.Level;
+import org.apache.commons.logging.Log;
+import org.apache.logging.log4j.LogManager;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 public class ServerPhysic {
-	
+
 	public static Random random = new Random();
-	
-	public static ArrayList swimItem = new ArrayList(); //Can be Material, Block, Item, Stack, String(Contains)
-	public static ArrayList burnItem = new ArrayList(); //Can be Material, Block, Item, Stack, String(Contains)
 
-    public static Item getItem(String ItemID) {
-        // This function will return an item from its string ID (ex: minecraft:blaze_rod).
-        // If the modId is omitted, it will look directly in the minecraft namespace.
-        String modId = "minecraft";
-        String name = null;
+//	public static ArrayList swimItem = new ArrayList(); //Can be Material, Block, Item, Stack, String(Contains)
+//	public static ArrayList burnItem = new ArrayList(); //Can be Material, Block, Item, Stack, String(Contains)
+//    public static Item getItem(String ItemID) {
+//        // This function will return an item from its string ID (ex: minecraft:blaze_rod).
+//        // If the modId is omitted, it will look directly in the minecraft namespace.
+//        String modId = "minecraft";
+//        String name = null;
+//
+//        if (ItemID.indexOf(":") != -1) {
+//            String[] nameSplit = ItemID.split(":");
+//            modId = nameSplit[0];
+//            name = nameSplit[1];
+//        } else name = ItemID;
+//
+//        return GameRegistry.findItem(modId, name);
+//    }
+//
+//    public static void loadItemList() {
+//        for (int i = 0; i < ItemDummyContainer.floatList.length; i += 1) {
+//            Item x = getItem(ItemDummyContainer.floatList[i]);
+//            if (x != null) swimItem.add(x);
+//        }
+//
+//        for (int i = 0; i < ItemDummyContainer.burnList.length; i += 1) {
+//            Item x = getItem(ItemDummyContainer.burnList[i]);
+//            if (x != null) burnItem.add(x);
+//        }
+//    }
 
-        if (ItemID.indexOf(":") != -1) {
-            String[] nameSplit = ItemID.split(":");
-            modId = nameSplit[0];
-            name = nameSplit[1];
-        } else name = ItemID;
-
-        return GameRegistry.findItem(modId, name);
-    }
-
-	public static void loadItemList() {
-        for (int i = 0; i < ItemDummyContainer.floatList.length; i += 1) {
-            Item x = getItem(ItemDummyContainer.floatList[i]);
-            if (x != null) swimItem.add(x);
-        }
-
-		for (int i = 0; i < ItemDummyContainer.burnList.length; i += 1) {
-            Item x = getItem(ItemDummyContainer.burnList[i]);
-            if (x != null) burnItem.add(x);
-        }
-	}
-	
 	public static void update(EntityItem item) {
 		ItemStack stack = item.getDataWatcher().getWatchableObjectItemStack(10);
         if (stack != null && stack.getItem() != null) {
             if (stack.getItem().onEntityItemUpdate(item)) return;
         }
-        
+
         if (item.getEntityItem() == null) item.setDead();
         else {
             item.onEntityUpdate();
-            
+
             if (item.delayBeforeCanPickup > 0) --item.delayBeforeCanPickup;
 
             item.prevPosX = item.posX;
             item.prevPosY = item.posY;
             item.prevPosZ = item.posZ;
-            
+
             float f = 0.98F;
             Fluid fluid = getFluid(item);
             if (fluid == null) item.motionY -= 0.04D;
@@ -94,7 +88,7 @@ public class ServerPhysic {
             	double speed = - 1/density * 0.01;
 
             	if (canItemSwim(stack)) speed = 0.05;
-            	
+
             	double speedreduction = (speed-item.motionY)/2;
             	double maxSpeedReduction = 0.05;
 
@@ -102,7 +96,7 @@ public class ServerPhysic {
             	if (speedreduction > maxSpeedReduction) speedreduction = maxSpeedReduction;
 
             	item.motionY += speedreduction;
-            	
+
             	/*double range = 0.005;
             	double amount = 50;
             	double speed = -0.05/(density*5);
@@ -112,10 +106,10 @@ public class ServerPhysic {
             		item.motionY += density/amount;
             	else
             		item.motionY = -speed;
-            	
+
             	if (canItemSwim(stack))
             		item.motionY += 0.024*density;*/
-            	
+
             	f = (float) (1D/density/1.2);
 
             	/*double amount = 0.03*((double)fluid.getDensity()/1000D);
@@ -123,11 +117,11 @@ public class ServerPhysic {
             		amount += 0.05;
             	item.motionY += amount;*/
             }
-            
+
             item.noClip = func_145771_j(item, item.posX, (item.boundingBox.minY + item.boundingBox.maxY) / 2.0D, item.posZ);
             item.moveEntity(item.motionX, item.motionY, item.motionZ);
             boolean flag = (int)item.prevPosX != (int)item.posX || (int)item.prevPosY != (int)item.posY || (int)item.prevPosZ != (int)item.posZ;
-            
+
             if (flag || item.ticksExisted % 25 == 0) {
                 if (item.worldObj.getBlock(MathHelper.floor_double(item.posX), MathHelper.floor_double(item.posY), MathHelper.floor_double(item.posZ)).getMaterial() == Material.lava && canItemBurn(stack)) {
                 	item.playSound("random.fizz", 0.4F, 2.0F + random.nextFloat() * 0.4F);
@@ -137,22 +131,22 @@ public class ServerPhysic {
 
                 if (!item.worldObj.isRemote) searchForOtherItemsNearby(item);
             }
-            
+
             if (item.onGround) f = item.worldObj.getBlock(MathHelper.floor_double(item.posX), MathHelper.floor_double(item.boundingBox.minY) - 1, MathHelper.floor_double(item.posZ)).slipperiness * 0.98F;
-            
+
             item.motionX *= (double)f;
             item.motionZ *= (double)f;
-            
+
             if (fluid == null) {
 	            item.motionY *= 0.98D;
 
 	            if (item.onGround) item.motionY *= -0.5D;
             }
-            
+
             if (item.age < 1 && item.lifespan == 6000) item.lifespan = ItemDummyContainer.despawnItem;
-            
+
             ++item.age;
-            
+
             if (!item.worldObj.isRemote && item.age >= item.lifespan) {
                 if (stack != null) {
                     ItemExpireEvent event = new ItemExpireEvent(item, (stack.getItem() == null ? 6000 : stack.getItem().getEntityLifespan(stack, item.worldObj)));
@@ -165,11 +159,11 @@ public class ServerPhysic {
             if (stack != null && stack.stackSize <= 0) item.setDead();
         }
 	}
-	
+
 	public static Fluid getFluid(EntityItem item) {
 		return getFluid(item, false);
     }
-	
+
 	public static Fluid getFluid(EntityItem item, boolean below) {
         double d0 = item.posY + (double)item.getEyeHeight();
         int i = MathHelper.floor_double(item.posX);
@@ -182,9 +176,9 @@ public class ServerPhysic {
         Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
         if (fluid == null && block instanceof IFluidBlock) fluid = ((IFluidBlock)block).getFluid();
         else if (block instanceof BlockLiquid) fluid = FluidRegistry.WATER;
-        
+
         if (below) return fluid;
-        
+
         double filled = 1.0f; //If it's not a liquid assume it's a solid block
         if (block instanceof IFluidBlock) filled = ((IFluidBlock)block).getFilledPercentage(item.worldObj, i, j, k);
 
@@ -198,18 +192,18 @@ public class ServerPhysic {
 
         return null;
     }
-	
+
 	public static double lastPosY;
-	
+
 	public static void updatePositionBefore(EntityItem item) {
 		lastPosY = item.posY;
     }
-	
+
     public static void updatePosition(EntityItem item, double posY) {
 		double diff = Math.sqrt(Math.pow(lastPosY - posY, 2));
 		if (diff < 0.5D && diff > 0) item.setPosition(item.posX, lastPosY, item.posZ);
     }
-	
+
 	private static void searchForOtherItemsNearby(EntityItem item) {
         Iterator iterator = item.worldObj.getEntitiesWithinAABB(EntityItem.class, item.boundingBox.expand(0.5D, 0.0D, 0.5D)).iterator();
 
@@ -218,7 +212,7 @@ public class ServerPhysic {
             item.combineItems(entityitem);
         }
     }
-	
+
 	public static boolean func_145771_j(EntityItem item, double p_145771_1_, double p_145771_3_, double p_145771_5_) {
         int i = MathHelper.floor_double(p_145771_1_);
         int j = MathHelper.floor_double(p_145771_3_);
@@ -276,11 +270,11 @@ public class ServerPhysic {
             return true;
         }
     }
-	
+
 	public static void onCollideWithPlayer(EntityItem item, EntityPlayer par1EntityPlayer) {
 		onCollideWithPlayer(item, par1EntityPlayer, true);
     }
-	
+
 	public static void onCollideWithPlayer(EntityItem item, EntityPlayer par1EntityPlayer, boolean needsSneak) {
 		if (ItemDummyContainer.customPickup && needsSneak && !par1EntityPlayer.isSneaking()) return;
         if (!item.worldObj.isRemote) {
@@ -314,7 +308,7 @@ public class ServerPhysic {
             }
         }
     }
-	
+
 	public static boolean interactFirst(EntityItem item, EntityPlayer par1EntityPlayer) {
 		if (ItemDummyContainer.customPickup) {
 			onCollideWithPlayer(item, par1EntityPlayer, false);
@@ -322,22 +316,22 @@ public class ServerPhysic {
 		}
         return false;
     }
-	
+
 	public static boolean attackEntityFrom(EntityItem item, DamageSource par1DamageSource, float par2) {
 		if (item.isEntityInvulnerable()) return false;
         else if (item.getEntityItem() != null && item.getEntityItem().getItem() == Items.nether_star && par1DamageSource.isExplosion() && canItemBurn(item.getEntityItem())) return false;
         else {
         	if ((par1DamageSource == DamageSource.lava | par1DamageSource == DamageSource.onFire | par1DamageSource == DamageSource.inFire) && !canItemBurn(item.getEntityItem())) return false;
         	if (par1DamageSource == DamageSource.cactus) return false;
-        	
+
         	setHealth(item, (int) (getHealth(item) - 1));
-        	
+
             if (getHealth(item)  <= 0) item.setDead();
 
             return false;
         }
     }
-	
+
 	public static int getHealth(EntityItem item) {
 		boolean obfuscated = false;
 		try { obfuscated = EntityItem.class.getField("health") == null; }
@@ -353,7 +347,7 @@ public class ServerPhysic {
 			}
 		}
 	}
-	
+
 	public static void setHealth(EntityItem item, int health) {
 		boolean obfuscated = false;
 		try{ obfuscated = EntityItem.class.getField("health") == null; }
@@ -368,46 +362,83 @@ public class ServerPhysic {
 			}
 		}
 	}
-	
+
+
 	public static boolean isItemBurning(EntityItem item) {
 		boolean flag = item.worldObj != null && item.worldObj.isRemote;
         if (!(!item.isImmuneToFire() && (flag && (item.getDataWatcher().getWatchableObjectByte(0) & 1 << 0) != 0))) return false;
         return canItemBurn(item.getEntityItem());
 	}
-	
+
+    public static boolean swim = false;
 	public static boolean canItemSwim(ItemStack stack) {
-        if (ItemDummyContainer.invertFloatList) return !contains(swimItem, stack);
-		return contains(swimItem, stack);
-	}
-	
+        if (stack != null) {
+            if(!ItemDummyContainer.invertFloatList) {
+                swim = false;
+                for (ItemsWithMetaRegistryFloat.ItemWithMetaFloat itemWithMetaFloat : ItemsWithMetaRegistryFloat.FloatItems) {
+                    if(stack.getItem() == itemWithMetaFloat.item && stack.getItemDamage() == itemWithMetaFloat.metadata){
+                        swim = true;
+                    }
+                }
+            } else {
+                swim = true;
+                for (ItemsWithMetaRegistryFloat.ItemWithMetaFloat itemWithMetaFloat : ItemsWithMetaRegistryFloat.FloatItems) {
+                    if(stack.getItem() == itemWithMetaFloat.item && stack.getItemDamage() == itemWithMetaFloat.metadata){
+                        swim = false;
+                    }
+                }
+            }
+            return swim;
+        }
+        return false;
+    }
+    public static boolean burn = true;
 	public static boolean canItemBurn(ItemStack stack) {
-		if (!ItemDummyContainer.invertBurnList) return !contains(burnItem, stack);
-		return contains(burnItem, stack);
+        if (stack != null) {
+            if(!ItemDummyContainer.invertBurnList) {
+                burn = true;
+                for (ItemsWithMetaRegistryBurn.ItemWithMetaBurn itemWithMetaBurn : ItemsWithMetaRegistryBurn.BurnItems) {
+                    if(stack.getItem() == itemWithMetaBurn.item && stack.getItemDamage() == itemWithMetaBurn.metadata) {
+                        burn = false;
+                    }
+                }
+            } else {
+                burn = false;
+                for (ItemsWithMetaRegistryBurn.ItemWithMetaBurn itemWithMetaBurn : ItemsWithMetaRegistryBurn.BurnItems) {
+                    if(stack.getItem() == itemWithMetaBurn.item && stack.getItemDamage() == itemWithMetaBurn.metadata) {
+                        burn = true;
+                    }
+                }
+            }
+            return burn;
+        }
+        return true;
 	}
-	
-	public static boolean contains(ArrayList list, ItemStack stack) {
-		if (stack == null || stack.getItem() == null) return false;
-			
-		Object object = stack.getItem();
-		Material material = null;
-		
-		if (object instanceof ItemBlock) {
-			object = Block.getBlockFromItem((Item) object);
-			material = ((Block)object).getMaterial();
-		}
-		
-		int[] ores = OreDictionary.getOreIDs(stack);
-		
-		for (int i = 0; i < list.size(); i++) {
-			if (list.get(i) instanceof ItemStack && ItemStack.areItemStacksEqual(stack, (ItemStack) list.get(i)))  return true;
-			if (list.get(i) == object) return true;
-			if (list.get(i) == material) return true;
-			
-			if (list.get(i) instanceof String)
-			for (int j = 0; j < ores.length; j++) {
-				if (OreDictionary.getOreName(ores[j]).contains((CharSequence) list.get(i))) return true;
-			}
-		}
-		return false;
-	}
+
+//    public static boolean contains(ArrayList list, ItemStack stack) {
+//        if (stack == null || stack.getItem() == null) return false;
+//
+//        Object object = stack.getItem();
+//        Material material = null;
+//
+//        if (object instanceof ItemBlock) {
+//            object = Block.getBlockFromItem((Item) object);
+//            material = ((Block) object).getMaterial();
+//        }
+//
+//        int[] ores = OreDictionary.getOreIDs(stack);
+//
+//        for (int i = 0; i < list.size(); i++) {
+//            if (list.get(i) instanceof ItemStack && ItemStack.areItemStacksEqual(stack, (ItemStack) list.get(i)))  return true;
+//            if (list.get(i) == object) return true;
+//            if (list.get(i) == material) return true;
+//
+//            if (list.get(i) instanceof String)
+//                for (int j = 0; j < ores.length; j++) {
+//                    if (OreDictionary.getOreName(ores[j]).contains((CharSequence) list.get(i))) return true;
+//                }
+//        }
+//        return false;
+//    }
+
 }

@@ -1,104 +1,16 @@
 package com.creativemd.itemphysic;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import javax.imageio.ImageIO;
-
-import net.minecraft.util.*;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.Sys;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.AnnotationNode;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundManager;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.gui.achievement.GuiAchievement;
-import net.minecraft.client.multiplayer.GuiConnecting;
-import net.minecraft.client.particle.EffectRenderer;
-import net.minecraft.client.renderer.EntityRenderer;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.resources.FoliageColorReloadListener;
-import net.minecraft.client.resources.GrassColorReloadListener;
-import net.minecraft.client.resources.LanguageManager;
-import net.minecraft.client.resources.ResourcePackRepository;
-import net.minecraft.client.resources.SimpleReloadableResourceManager;
-import net.minecraft.client.resources.data.AnimationMetadataSection;
-import net.minecraft.client.resources.data.AnimationMetadataSectionSerializer;
-import net.minecraft.client.resources.data.FontMetadataSection;
-import net.minecraft.client.resources.data.FontMetadataSectionSerializer;
-import net.minecraft.client.resources.data.LanguageMetadataSection;
-import net.minecraft.client.resources.data.LanguageMetadataSectionSerializer;
-import net.minecraft.client.resources.data.PackMetadataSection;
-import net.minecraft.client.resources.data.PackMetadataSectionSerializer;
-import net.minecraft.client.resources.data.TextureMetadataSection;
-import net.minecraft.client.resources.data.TextureMetadataSectionSerializer;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemCloth;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-
-import net.minecraft.stats.AchievementList;
-import net.minecraft.stats.StatFileWriter;
-import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.world.chunk.storage.AnvilSaveConverter;
-import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.client.GuiIngameForge;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.event.entity.item.ItemExpireEvent;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-
 import com.creativemd.creativecore.common.packet.CreativeCorePacket;
 import com.creativemd.itemphysic.config.ItemConfigSystem;
+import com.creativemd.itemphysic.list.ItemsWithMetaRegistryBurn;
+import com.creativemd.itemphysic.list.ItemsWithMetaRegistryFloat;
 import com.creativemd.itemphysic.packet.DropPacket;
 import com.creativemd.itemphysic.packet.PickupPacket;
 import com.creativemd.itemphysic.physics.ClientPhysic;
-import com.creativemd.itemphysic.physics.ServerPhysic;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.DummyModContainer;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.FMLModContainer;
 import cpw.mods.fml.common.LoadController;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModMetadata;
@@ -107,21 +19,28 @@ import cpw.mods.fml.common.event.FMLConstructionEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.Event.Result;
-import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.RenderTickEvent;
-import cpw.mods.fml.common.network.FMLEmbeddedChannel;
-import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.oredict.OreDictionary;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class ItemDummyContainer extends DummyModContainer {
 
 	// We define the mod properties
 	public static final String MODID = "itemphysic";
 	public static final String NAME = "ItemPhysic";
-	public static final String VERSION = "1.1.6" + " kotmatross edition";
+	public static final String VERSION = "1.1.8" + " kotmatross edition";
 	public static final String DESCRIPTION = "A minecraft mod that adds physics to thrown items.";
 	public static final String CREDITS = "CreativeMD";
 	public static final String URL = "";
@@ -150,10 +69,10 @@ public class ItemDummyContainer extends DummyModContainer {
 		return true;
 	}
 
-	@Subscribe
+    @Subscribe
 	public void modConstruction(FMLConstructionEvent evt){}
 
-	@Subscribe
+    @Subscribe
 	public void init(FMLInitializationEvent evt) {
 
 		if (!ItemTransformer.isLite) {
@@ -179,7 +98,7 @@ public class ItemDummyContainer extends DummyModContainer {
 	public static Configuration config;
 	public static float rotateSpeed = 1.0F;
 
-	@Subscribe
+    @Subscribe
 	public void preInit(FMLPreInitializationEvent evt) {
 		// The following overrides the mcmod.info file!
 		// Adapted from Jabelar's Magic Beans:
@@ -244,17 +163,73 @@ public class ItemDummyContainer extends DummyModContainer {
 
 		rotateSpeed = config.getFloat("rotateSpeed", "Item", 1.0F, 0, 100, "Speed of the item rotation.");
 		config.save();
-		ServerPhysic.loadItemList();
+		//ServerPhysic.loadItemList();
 	}
 
-	@Subscribe
+    @Subscribe
 	@SideOnly(Side.CLIENT)
 	public void onRender(RenderTickEvent evt) {
 		ClientPhysic.tick = System.nanoTime();
 	}
 
-	@Subscribe
-	public void postInit(FMLPostInitializationEvent evt) {}
+    @Subscribe
+	public void postInit(FMLPostInitializationEvent evt) {
+        //This approach also acts like a hash function, initializing 2 lists at a late stage of loading so that the lists don't have to be checked constantly
+        for (String itemName : burnList) {
+            String modId;
+            String itemNameOnly;
+            int metadata = 0;
+
+            String[] parts = itemName.split(":");
+            if (parts.length >= 2) {
+                modId = parts[0];
+                itemNameOnly = parts[1];
+                if (parts.length == 3) {
+                        metadata = Integer.parseInt(parts[2]);
+                }
+                Item item = GameRegistry.findItem(modId, itemNameOnly);
+                if (item != null) {
+                    ItemsWithMetaRegistryBurn.ItemWithMetaBurn Item = new ItemsWithMetaRegistryBurn.ItemWithMetaBurn(item, metadata);
+                    ItemsWithMetaRegistryBurn.BurnItems.add(Item);
+                }
+            } else if(parts.length == 1) {
+                List<String> oredictNames = Arrays.asList(OreDictionary.getOreNames());
+                if (oredictNames.contains(itemName)) {
+                    for (ItemStack oreStack : OreDictionary.getOres(itemName)) {
+                        ItemsWithMetaRegistryBurn.ItemWithMetaBurn Item = new ItemsWithMetaRegistryBurn.ItemWithMetaBurn(oreStack.getItem(), oreStack.getItemDamage());
+                        ItemsWithMetaRegistryBurn.BurnItems.add(Item);
+                    }
+                }
+            }
+        }
+        for (String itemName : floatList) {
+            String modId;
+            String itemNameOnly;
+            int metadata = 0;
+
+            String[] parts = itemName.split(":");
+            if (parts.length >= 2) {
+                modId = parts[0];
+                itemNameOnly = parts[1];
+                if (parts.length == 3) {
+                    metadata = Integer.parseInt(parts[2]);
+                }
+                Item item = GameRegistry.findItem(modId, itemNameOnly);
+                if (item != null) {
+                    ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(item, metadata);
+                    ItemsWithMetaRegistryFloat.FloatItems.add(Item);
+                }
+            } else if(parts.length == 1) {
+                List<String> oredictNames = Arrays.asList(OreDictionary.getOreNames());
+                if (oredictNames.contains(itemName)) {
+                    for (ItemStack oreStack : OreDictionary.getOres(itemName)) {
+                        ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage());
+                        ItemsWithMetaRegistryFloat.FloatItems.add(Item);
+                    }
+                }
+            }
+        }
+    }
 
 	public static Logger log = LogManager.getLogger(ItemDummyContainer.MODID); // Creates the debug log function.
 
