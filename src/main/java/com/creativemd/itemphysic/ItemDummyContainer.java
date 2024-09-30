@@ -35,13 +35,14 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class ItemDummyContainer extends DummyModContainer {
 
 	// We define the mod properties
 	public static final String MODID = "itemphysic";
 	public static final String NAME = "ItemPhysic";
-	public static final String VERSION = "1.2.0" + " kotmatross edition";
+	public static final String VERSION = "1.2.1" + " kotmatross edition";
 	public static final String DESCRIPTION = "A minecraft mod that adds physics to thrown items.";
 	public static final String CREDITS = "CreativeMD";
 	public static final String URL = "";
@@ -343,9 +344,17 @@ public class ItemDummyContainer extends DummyModContainer {
                 List<String> oredictNames = Arrays.asList(OreDictionary.getOreNames());
                 if (oredictNames.contains(itemName)) {
                     for (ItemStack oreStack : OreDictionary.getOres(itemName)) {
-                        //ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage(), ignoremeta, liquidsList.toArray(new String[liquidsList.size()]));
-                        ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage(), ignoremeta, liquidsList.toArray(new String[0]));
-                        ItemsWithMetaRegistryFloat.FloatItems.add(Item);
+                         String[] liquidsArray = liquidsList.toArray(new String[0]);
+                         //ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage(), ignoremeta, liquidsList.toArray(new String[liquidsList.size()]));
+                         if(oreStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+                            ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage(), true, liquidsArray);
+                            ItemsWithMetaRegistryFloat.FloatItems.add(Item);
+                            //LogManager.getLogger().fatal("ITEM : " + Objects.requireNonNull(oreStack.getItem()).getUnlocalizedName() + " META : " + oreStack.getItemDamage() + " IGNOREMETA : " + true + " LIQUID : " + Arrays.asList(liquidsArray));
+                         } else {
+                            ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage(), ignoremeta, liquidsArray);
+                            ItemsWithMetaRegistryFloat.FloatItems.add(Item);
+                            //LogManager.getLogger().fatal("ITEM : " + Objects.requireNonNull(oreStack.getItem()).getUnlocalizedName() + " META : " + oreStack.getItemDamage() + " IGNOREMETA : " + ignoremeta + " LIQUID : " + Arrays.asList(liquidsArray));
+                         }
                     }
                 }
             }
