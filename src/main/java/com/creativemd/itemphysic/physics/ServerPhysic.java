@@ -127,7 +127,10 @@ public class ServerPhysic {
 //TODO despawn option not working
             if (item.age < 1 && item.lifespan == 6000) item.lifespan = ItemDummyContainer.despawnItem;
             ++item.age;
-
+/**
+            if(item.lifespan == 6000 && item.lifespan != ItemDummyContainer.despawnItem)
+                item.lifespan = ItemDummyContainer.despawnItem;
+*/
             if (!item.worldObj.isRemote && item.age >= item.lifespan) {
                 if (stack != null) {
                     ItemExpireEvent event = new ItemExpireEvent(item, (stack.getItem() == null ? 6000 : stack.getItem().getEntityLifespan(stack, item.worldObj)));

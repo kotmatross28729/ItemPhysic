@@ -154,6 +154,7 @@ public class EventHandler {
 
                 EntityItem entity = getEntityItem(distance, mc.thePlayer);
 
+                //TODO showTooltip backport
                 if (entity != null && mc.inGameHasFocus) {
                     int space = 15;
                     List<String> list = new ArrayList<>();
