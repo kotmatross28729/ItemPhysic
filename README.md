@@ -1,40 +1,129 @@
-### ItemPhysic
-A minecraft forge mod that adds some physic to thrown items. 
-This is the 1.7.10 branch, as of now, i do not plan on working on other versions, no need to ask.
-For any other version, please check out [the original repo](https://github.com/CreativeMD/ItemPhysic).
+### ItemPhysic 1.7.10 Kotmatross fork
+A minecraft forge mod that adds some physic to thrown items.
 
-This release is mainly made for my modpack, feel free to report any incompatibility you find.
+---
 
 #### Dependencies:
-- [CreativeCore](https://github.com/CreativeMD/CreativeCore/tree/1.7.10)
-- [In-Game Config Manager](https://github.com/CreativeMD/IGCM/tree/1.7.10) (optional, will disappear later on)
+- [CreativeCore GTNH version](https://github.com/GTNewHorizons/CreativeCore/releases)
+  - You can use the official version, but I don't recommend it
+
+---
+### Changes with the original version:
 
 
+#### HRudyPlayZ:
+- Added some settings related to the burning items list. You can choose which items will or will not burn in fire/lava etc.
 
-#### Differences with the original version:
+  - You can also invert this setting.
 
-- Added some settings related to the burning items list. You can choose which items will or will not burn in fire/lava etc. 
+- Added some settings related to floating items list. You can choose which items will or will not float in liquids.
 
-  You can also invert this setting.
-
-- Added some settings related to floating items list. You can choose which items will or will not float in liquids. 
-
-  You can also invert this setting.
+  - You can also invert this setting.
 
 - Made the config look better, with descriptions for each option.
 
 - Added a fancy color format in the mod list.
 
-- Upped the version number to 1.1.6
+---
+#### My (Kotmatross):
 
-- Updated the workspace to use Forge 1614, Java 8, the latest gradle-wrapper and to work with IntelliJ.
-
-- Removed the requirement to manually edit the META-INF/MANIFEST.MF file after each build.
+- Fixed a bug where the item pickup panel wouldn't scale to fit the screen size
 
 
+- Rewritten the entire list system (burnList and floatList) from scratch (fixes a LOT of bugs)
+  - Added OreDictionary support (you can add huge groups of items without adding each one separately)
+
+  - Added item metadata support (for greater accuracy)
+
+  - Added forge fluid system support (for floatList)
+
+---
+
+## Documentation on lists:
+
+### parameters:
+
+
+| Parameter name | Type                 | Default            | Example                                                                                                                |
+|----------------|----------------------|--------------------|------------------------------------------------------------------------------------------------------------------------|
+| `modid`        | String (abc)         | -                  | `minecraft` / `etfuturum` / `hbm` / `Thaumcraft`                                                                       |
+| `itemname`     | String (abc)         | -                  | stick / beetroot / item.part_generic / blockCustomOre                                                                  |
+| `metadata`     | Int (123)            | 0                  | 0 / 4 / 1 / 5                                                                                                          |
+| `ignoremeta`   | Boolean (true/false) | false              | true / false                                                                                                           |
+| `fluid`        | String (abc)         | `fluid.tile.water` | if vanilla (water/lava) - `fluid.tile.water` `fluid.tile.lava`, else (thermal foundation, etc) - `fluid.redstone`, etc |
+
+
+
+
+### burnList:
+
+**Minimum syntax:**
+
+* `modid:itemname`
+  - *Example:* `minecraft:blaze_rod`
+
+Means that item "itemname" from "modid" will NOT burn in lava
+
+**Maximum syntax:**
+
+* 1)`modid:itemname:metadata`
+  - *Example:* `minecraft:golden_apple:1` //enchanted
+
+OR
+
+* 2)`modid:itemname:ignoremeta`
+  - *Example:* `etfuturum:netherite_sword:true`
+
+Means that item "itemname" from "modid" : 1)with metadata "metadata" 2)with any metadata will NOT burn in lava
+
+With `B:invertBurnList=true` everything is exactly the opposite: the items specified in this list will be the only ones that WILL burn
+
+(it follows that absolutely all other items not on this list will NOT burn)
+
+### floatList:
+
+**Minimum syntax:**
+
+* `modid:itemname`
+  - *Example:* `minecraft:stick`
+
+Means that item "itemname" from "modid" will float in water
+
+**Maximum syntax:**
+
+* 1)`modid:itemname:metadata:fluids[]...`
+  - *Example:* `etfuturum:tipped_arrow:8227:fluid.tile.lava`
+
+OR
+
+* 2)`modid:itemname:ignoremeta:fluids[]...`
+  - *Example:* `etfuturum:netherite_sword:true:fluid.tile.lava:fluid.redstone`
+
+Means that item "itemname" from "modid": 1)with metadata "metadata" 2)with any metadata WILL float in fluids "fluids[]"
+
+With `B:invertFloatList=true` everything is exactly the opposite: the items specified in this list will be the only ones that will NOT float in the specified fluids.
+
+(it follows that absolutely all other items not on this list WILL float in all fluids)
+
+**Note when specifying fluids: if it's vanilla water/lava, use `fluid.tile.water` or `fluid.tile.lava`. When specifying mod fluids, just use `fluid.fluidname` (without .tile)**
+
+---
 
 #### TODO:
-- Replace in-game config manager support with the standard forge in-game config. (Might add it back at some point)
-- Fix floating items spinning eternally when they reach the surface
-- Fix item despawn option not working.
-- Maybe backport some functions to be able to choose stuff like if an item should be cactus-resistant from newer versions.
+
+| Name of TODO feature                                                                                              | Priority |
+|-------------------------------------------------------------------------------------------------------------------|----------|
+ | Fix item despawn option not working                                                                               | high     |
+| Backport some functions to be able to choose stuff like if an item should be cactus-resistant from newer versions | high     |
+| Fix a bug causing items to spin on thaumcraft pedestals                                                           | high     |
+| Fix item despawn option not working                                                                               | medium   |
+
+### In the future:
+
+| Name of feature                                                             |
+|-----------------------------------------------------------------------------|
+| List of items that are explosion resistant                                  |
+| List of items that are cactus resistant                                     |
+| List of items that are immune to any damage (good luck getting rid of them) |
+
+

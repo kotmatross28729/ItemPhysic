@@ -32,6 +32,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class ItemDummyContainer extends DummyModContainer {
 	// We define the mod properties
 	public static final String MODID = "itemphysic";
 	public static final String NAME = "ItemPhysic";
-	public static final String VERSION = "1.1.9" + " kotmatross edition";
+	public static final String VERSION = "1.2.0" + " kotmatross edition";
 	public static final String DESCRIPTION = "A minecraft mod that adds physics to thrown items.";
 	public static final String CREDITS = "CreativeMD";
 	public static final String URL = "";
@@ -55,7 +56,8 @@ public class ItemDummyContainer extends DummyModContainer {
 		meta.version = VERSION; //String.format("%d.%d.%d.%d", majorVersion, minorVersion, revisionVersion, buildVersion);
 		meta.credits = CREDITS;
 		meta.authorList = Arrays.asList(EnumChatFormatting.GOLD + "" + EnumChatFormatting.BOLD + "CreativeMD",
-										EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "HRudyPlayZ");
+                                         EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "HRudyPlayZ",
+                                         EnumChatFormatting.AQUA + "" + EnumChatFormatting.BOLD + "Kotmatross");
 		meta.description = DESCRIPTION;
 		meta.url = URL;
 		meta.updateUrl = "";
@@ -137,28 +139,119 @@ public class ItemDummyContainer extends DummyModContainer {
 
 			invertBurnList = config.getBoolean("invertBurnList", "listBurn", false, "Whether to invert the burn list (so items in it will be the only ones to burn).");
 			burnList = config.getStringList("burnList","listBurn", new String[]{
+                    "minecraft:bedrock",                //IMMUNE
+                    "minecraft:obsidian",               //EXPLOSION
+                    "minecraft:netherrack",
+                    "minecraft:soul_sand",
+                    "minecraft:glowstone",
+                    "minecraft:nether_brick",
+                    "minecraft:nether_brick_fence",
+                    "minecraft:nether_brick_stairs",
+                    "minecraft:enchanting_table",
+                    "minecraft:dragon_egg",             //IMMUNE
+                    "minecraft:command_block",          //IMMUNE
+                    "minecraft:golden_apple:1",
+                    "minecraft:bucket",
+                    "minecraft:water_bucket",
+                    "minecraft:lava_bucket",
+                    "minecraft:milk_bucket",
 					"minecraft:blaze_rod",
-					"minecraft:fire_charge",
-					"minecraft:bucket",
-					"minecraft:lava_bucket",
+                    "minecraft:ghast_tear",
+                    "minecraft:nether_wart",
+                    "minecraft:blaze_powder",
 					"minecraft:magma_cream",
-					"minecraft:netherrack",
-					"minecraft:soul_sand",
-			}, "List of items that won't burn in lava or fire.");
+                    "minecraft:fire_charge",
+                    "minecraft:netherbrick",
+                "Thaumcraft:blockCustomOre:2",
+                "Thaumcraft:blockCrystal:1",
+                "Thaumcraft:ItemShard:1",
+                "Thaumcraft:ItemShard:6",               //EXPLOSION
+                "Thaumcraft:FocusFire",
+                "etfuturum:netherite_scrap",            //EXPLOSION
+                "etfuturum:netherite_ingot",            //EXPLOSION
+                "etfuturum:netherite_helmet",           //EXPLOSION
+                "etfuturum:netherite_chestplate",       //EXPLOSION
+                "etfuturum:netherite_leggings",         //EXPLOSION
+                "etfuturum:netherite_boots",            //EXPLOSION
+                "etfuturum:netherite_pickaxe",          //EXPLOSION
+                "etfuturum:netherite_spade",            //EXPLOSION
+                "etfuturum:netherite_axe",              //EXPLOSION
+                "etfuturum:netherite_hoe",              //EXPLOSION
+                "etfuturum:netherite_sword",            //EXPLOSION
+                "etfuturum:totem_of_undying",           //EXPLOSION
+                "oreTungsten",
+                "etfuturum:red_netherbrick",
+                "etfuturum:red_netherbrick:1",
+                "etfuturum:red_netherbrick:2",
+                "etfuturum:ancient_debris",             //EXPLOSION
+                "etfuturum:netherite_block",            //EXPLOSION
+                "etfuturum:nether_gold_ore",
+                "etfuturum:nether_brick_wall",
+                "etfuturum:red_nether_brick_wall",
+                "etfuturum:red_netherbrick_stairs",
+                "etfuturum:red_netherbrick_slab",
+                "etfuturum:soul_soil",
+                "etfuturum:netherite_stairs",           //EXPLOSION
+                "etfuturum:modded_raw_ore_block:9",
+                "etfuturum:deepslate_thaumcraft_ore:2",
+                "hbm:item.ingot_schrabidium",
+                "hbm:item.ingot_schrabidate",
+			}, "List of items that won't burn in lava or fire. See documentation on github");
 
 			invertFloatList = config.getBoolean("invertFloatList", "listFloat", false, "Whether to invert the float list (so items in it won't be able to float).");
 			floatList = config.getStringList("floatList","listFloat", new String[]{
-					"minecraft:blaze_rod",
+                "minecraft:bedrock:fluid.tile.lava",
+                "minecraft:netherrack:fluid.tile.lava",
+                "minecraft:glowstone:fluid.tile.lava",
+                "minecraft:nether_brick:fluid.tile.lava",
+                "minecraft:nether_brick_fence:fluid.tile.lava",
+                "minecraft:nether_brick_stairs:fluid.tile.lava",
+                "minecraft:dragon_egg:fluid.tile.lava",
+                "minecraft:golden_apple:1:fluid.tile.lava",
+                "minecraft:blaze_rod:fluid.tile.lava",
+                "minecraft:nether_wart:fluid.tile.lava",
+                "minecraft:blaze_powder:fluid.tile.lava",
+                "minecraft:magma_cream:fluid.tile.lava",
+                "minecraft:fire_charge:fluid.tile.lava",
+                "minecraft:netherbrick:fluid.tile.lava",
+                "Thaumcraft:blockCustomOre:2:fluid.tile.lava",
+                "Thaumcraft:blockCrystal:1:fluid.tile.lava",
+                "Thaumcraft:ItemShard:1:fluid.tile.lava",
+                "Thaumcraft:ItemShard:6:fluid.tile.lava",
+                "Thaumcraft:FocusFire:fluid.tile.lava",
+                "etfuturum:netherite_scrap:fluid.tile.lava",
+                "etfuturum:netherite_ingot:fluid.tile.lava",
+                "etfuturum:netherite_helmet:fluid.tile.lava",
+                "etfuturum:netherite_chestplate:fluid.tile.lava",
+                "etfuturum:netherite_leggings:fluid.tile.lava",
+                "etfuturum:netherite_boots:fluid.tile.lava",
+                "etfuturum:netherite_pickaxe:fluid.tile.lava",
+                "etfuturum:netherite_spade:fluid.tile.lava",
+                "etfuturum:netherite_axe:fluid.tile.lava",
+                "etfuturum:netherite_hoe:fluid.tile.lava",
+                "etfuturum:netherite_sword:fluid.tile.lava",
+                "etfuturum:red_netherbrick:fluid.tile.lava",
+                "etfuturum:red_netherbrick:1:fluid.tile.lava",
+                "etfuturum:red_netherbrick:2:fluid.tile.lava",
+                "etfuturum:ancient_debris:fluid.tile.lava",
+                "etfuturum:nether_gold_ore:fluid.tile.lava",
+                "etfuturum:nether_brick_wall:fluid.tile.lava",
+                "etfuturum:red_nether_brick_wall:fluid.tile.lava",
+                "etfuturum:red_netherbrick_stairs:fluid.tile.lava",
+                "etfuturum:red_netherbrick_slab:fluid.tile.lava",
+                "etfuturum:deepslate_thaumcraft_ore:2:fluid.tile.lava",
 					"minecraft:stick",
-					"minecraft:wooden_planks",
-					"minecraft:log",
-					"minecraft:log2",
-					"minecraft:wooden_pickaxe",
-					"minecraft:wooden_shovel",
-					"minecraft:wooden_sword",
-					"minecraft:wooden_axe",
-					"minecraft:wooden_hoe"
-			}, "List of items that will float in fluids such as lava or water.");
+					"plankWood",
+					"logWood",
+                    "blockCloth",
+                    "stairWood",
+					"minecraft:wooden_pickaxe:true",
+					"minecraft:wooden_shovel:true",
+					"minecraft:wooden_sword:true",
+					"minecraft:wooden_axe:true",
+					"minecraft:wooden_hoe:true",
+                "minecraft:hay_block",
+			}, "List of items that will float in fluids. See documentation on github");
 		}
 
 		rotateSpeed = config.getFloat("rotateSpeed", "Item", 1.0F, 0, 100, "Speed of the item rotation.");
@@ -197,7 +290,7 @@ public class ItemDummyContainer extends DummyModContainer {
                     ItemsWithMetaRegistryBurn.ItemWithMetaBurn Item = new ItemsWithMetaRegistryBurn.ItemWithMetaBurn(item, metadata, ignoremeta);
                     ItemsWithMetaRegistryBurn.BurnItems.add(Item);
                 }
-            } else if(parts.length >= 1) {
+            } else if(parts.length == 1) {
                 List<String> oredictNames = Arrays.asList(OreDictionary.getOreNames());
                 if (oredictNames.contains(itemName)) {
                     for (ItemStack oreStack : OreDictionary.getOres(itemName)) {
@@ -212,6 +305,8 @@ public class ItemDummyContainer extends DummyModContainer {
             String itemNameOnly;
             int metadata = 0;
             boolean ignoremeta = false;
+            List<String> liquidsList = new ArrayList<>();
+            liquidsList.add("fluid.tile.water"); // default
 
             String[] parts = itemName.split(":");
             if (parts.length >= 2) {
@@ -222,18 +317,34 @@ public class ItemDummyContainer extends DummyModContainer {
                         metadata = Integer.parseInt(parts[2]);
                     } catch (NumberFormatException e) {
                         ignoremeta = Boolean.parseBoolean(parts[2]);
+                    } if(!ignoremeta && metadata == 0) {
+                        liquidsList.set(0, parts[2]); //assert that ignoremeta missing (I assure you, no one will write :false)
                     }
+                } else if(parts.length > 3) {
+                    try {
+                        metadata = Integer.parseInt(parts[2]);
+                    } catch (NumberFormatException e) {
+                        ignoremeta = Boolean.parseBoolean(parts[2]);
+                    }
+//                    for(int i = 3; i < parts.length; i++) {
+//                        liquidsList.add(parts[i]); // Add all liquids to the list
+//                    }
+                    liquidsList.addAll(Arrays.asList(parts).subList(3, parts.length));
                 }
                 Item item = GameRegistry.findItem(modId, itemNameOnly);
                 if (item != null) {
-                    ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(item, metadata, ignoremeta);
+                    //String[] liquidsArray = liquidsList.toArray(new String[liquidsList.size()]);
+                    String[] liquidsArray = liquidsList.toArray(new String[0]);
+                    ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(item, metadata, ignoremeta, liquidsArray);
                     ItemsWithMetaRegistryFloat.FloatItems.add(Item);
+                    //LogManager.getLogger().fatal("ITEM : " + item.getUnlocalizedName() + " META : " + metadata + " IGNOREMETA : " + ignoremeta + " LIQUID : " + Arrays.asList(liquidsArray));
                 }
             } else if(parts.length == 1) {
                 List<String> oredictNames = Arrays.asList(OreDictionary.getOreNames());
                 if (oredictNames.contains(itemName)) {
                     for (ItemStack oreStack : OreDictionary.getOres(itemName)) {
-                        ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage(), ignoremeta);
+                        //ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage(), ignoremeta, liquidsList.toArray(new String[liquidsList.size()]));
+                        ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage(), ignoremeta, liquidsList.toArray(new String[0]));
                         ItemsWithMetaRegistryFloat.FloatItems.add(Item);
                     }
                 }

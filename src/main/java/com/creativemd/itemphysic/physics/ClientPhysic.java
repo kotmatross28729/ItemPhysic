@@ -41,19 +41,21 @@ public class ClientPhysic {
 	public static RenderItem ItemRenderer = RenderItem.getInstance();
 	public static Random random = new Random();
 	public static Minecraft mc = Minecraft.getMinecraft();
-	
+
 	public static long tick;
-	
+
 	public static double rotation;
-	
+
 	@SideOnly(Side.CLIENT)
 	public static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
-	
+
 
 	@SideOnly(Side.CLIENT)
 	public static void doRender(Entity par1Entity, double x, double y, double z, float par8, float par9) {
 		rotation = (double)(System.nanoTime()-tick)/2500000*ItemDummyContainer.rotateSpeed;
 		if (!mc.inGameHasFocus) rotation = 0;
+
+        //TODO maybe fix thaumcraft pedestals spin issue (somehow detect if item renders on pedestal, and cancel rotation)
 
 		EntityItem item = ((EntityItem)par1Entity);
 		ItemStack itemstack = item.getEntityItem();
@@ -116,9 +118,10 @@ public class ClientPhysic {
                         float f8 = (random.nextFloat() * 2.0F - 1.0F) * 0.2F / f9;
                         GL11.glTranslatef(f6, f7, f8);
                     }
-                    
-                    if (item.rotationPitch > 360) item.rotationPitch = 0;
-                    
+
+                    if (item.rotationPitch > 360)
+                        item.rotationPitch = 0;
+
                     if (item != null && !Double.isNaN(item.posX) && !Double.isNaN(item.posY) && !Double.isNaN(item.posZ) && item.worldObj != null) {
                     	if (item.onGround) {
                     		/*for (int i = 0; i < 4; i++) {
@@ -145,15 +148,16 @@ public class ClientPhysic {
                     			if (Abstand270 < Abstand90 && Abstand270 < Abstand180 && Abstand270 < Abstand0)
                     				if (item.rotationPitch-270 < 0)item.rotationPitch += rotation;
                     				else item.rotationPitch -= rotation;
-                    			
-                    		}*/
-                    		
-                    	} else {
 
+                    		}*/
+                    	} else {
                     		double rotation = ClientPhysic.rotation*2;
                     		Fluid fluid = ServerPhysic.getFluid(item);
-                    		if (fluid == null) fluid = ServerPhysic.getFluid(item, true);
-                    		else rotation /= fluid.getDensity()/1000*10;
+                    		if (fluid == null)
+                                fluid = ServerPhysic.getFluid(item, true);
+                    		else
+                                //TODO maybe fix rotation at water's surface? Don't know how tho
+                                rotation /= (double) (fluid.getDensity()/1000) * 10;
                     		item.rotationPitch += rotation;
                     	}
                     }
@@ -222,18 +226,18 @@ public class ClientPhysic {
             TextureUtil.func_147945_b();
         }
     }
-	
+
 	public static double formPositiv(float rotationPitch) {
 		if (rotationPitch > 0) return rotationPitch;
 		return -rotationPitch;
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	public static void renderDroppedItem(EntityItem item, IIcon par2Icon, int par3, float par4, float par5, float par6, float par7) {
         renderDroppedItem(item, par2Icon, par3, par4, par5, par6, par7, 0);
     }
 
-	@SideOnly(Side.CLIENT)	
+	@SideOnly(Side.CLIENT)
 	public static void renderDroppedItem(EntityItem item, IIcon par2Icon, int par3, float par4, float par5, float par6, float par7, int pass) {
 		Tessellator tessellator = Tessellator.instance;
 
@@ -262,7 +266,7 @@ public class ClientPhysic {
             	GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
             	GL11.glRotatef(item.rotationYaw, 0.0F, 0.0F, 1.0F);
             }
-            
+
             if (item != null && !Double.isNaN(item.posX) && !Double.isNaN(item.posY) && !Double.isNaN(item.posZ) && item.worldObj != null && !RenderItem.renderInFrame) {
 	            if (item.onGround) item.rotationPitch = 0;
 	            else {
@@ -270,15 +274,15 @@ public class ClientPhysic {
             		Fluid fluid = ServerPhysic.getFluid(item);
 
             		if (fluid != null) rotation /= fluid.getDensity()/1000*10;
-                		
+
             		item.rotationPitch += rotation;
-            		
+
 	            	//if (item.isInsideOfMaterial(Material.water) | item.worldObj.getBlock((int)item.posX, (int)item.posY-1, (int)item.posZ).getMaterial().equals(Material.water) | item.worldObj.getBlock((int)item.posX, (int)item.posY, (int)item.posZ).getMaterial().equals(Material.water))
-	            		//item.rotationPitch += rotation/1600000*ItemDummyContainer.rotateSpeed;	
+	            		//item.rotationPitch += rotation/1600000*ItemDummyContainer.rotateSpeed;
 	            	//else item.rotationPitch += rotation/20000*ItemDummyContainer.rotateSpeed;
 	            }
             }
-            
+
             GL11.glRotatef(item.rotationPitch, 1.0F, 0.0F, 0.0F);
 
             float f9 = 0.0625F;
@@ -344,7 +348,7 @@ public class ClientPhysic {
             }
 
             GL11.glPopMatrix();
-            
+
         } else {
             for (int l = 0; l < par3; ++l) {
                 GL11.glPushMatrix();
@@ -370,7 +374,7 @@ public class ClientPhysic {
             }
         }
     }
-	
+
 	public static byte getMiniBlockCount(ItemStack stack, byte original) {
         return original;
     }

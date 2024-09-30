@@ -87,7 +87,8 @@ public class ServerPhysic {
             	double density = (double)fluid.getDensity()/1000D;
             	double speed = - 1/density * 0.01;
 
-            	if (canItemSwim(stack)) speed = 0.05;
+                if(canItemSwim(stack, fluid))
+                    speed = 0.05;
 
             	double speedreduction = (speed-item.motionY)/2;
             	double maxSpeedReduction = 0.05;
@@ -96,26 +97,7 @@ public class ServerPhysic {
             	if (speedreduction > maxSpeedReduction) speedreduction = maxSpeedReduction;
 
             	item.motionY += speedreduction;
-
-            	/*double range = 0.005;
-            	double amount = 50;
-            	double speed = -0.05/(density*5);
-            	if (item.motionY > range+speed)
-            		item.motionY -= density/amount;
-            	else if (item.motionY < range-speed)
-            		item.motionY += density/amount;
-            	else
-            		item.motionY = -speed;
-
-            	if (canItemSwim(stack))
-            		item.motionY += 0.024*density;*/
-
             	f = (float) (1D/density/1.2);
-
-            	/*double amount = 0.03*((double)fluid.getDensity()/1000D);
-            	if (canItemSwim(stack))
-            		amount += 0.05;
-            	item.motionY += amount;*/
             }
 
             item.noClip = func_145771_j(item, item.posX, (item.boundingBox.minY + item.boundingBox.maxY) / 2.0D, item.posZ);
@@ -142,9 +124,8 @@ public class ServerPhysic {
 
 	            if (item.onGround) item.motionY *= -0.5D;
             }
-
+//TODO despawn option not working
             if (item.age < 1 && item.lifespan == 6000) item.lifespan = ItemDummyContainer.despawnItem;
-
             ++item.age;
 
             if (!item.worldObj.isRemote && item.age >= item.lifespan) {
@@ -175,7 +156,8 @@ public class ServerPhysic {
 
         Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
         if (fluid == null && block instanceof IFluidBlock) fluid = ((IFluidBlock)block).getFluid();
-        else if (block instanceof BlockLiquid) fluid = FluidRegistry.WATER;
+        else if (block instanceof BlockLiquid && block.getMaterial() == Material.water) fluid = FluidRegistry.WATER;
+        else if (block instanceof BlockLiquid && block.getMaterial() == Material.lava) fluid = FluidRegistry.LAVA;
 
         if (below) return fluid;
 
@@ -318,10 +300,17 @@ public class ServerPhysic {
     }
 
 	public static boolean attackEntityFrom(EntityItem item, DamageSource par1DamageSource, float par2) {
-		if (item.isEntityInvulnerable()) return false;
-        else if (item.getEntityItem() != null && item.getEntityItem().getItem() == Items.nether_star && par1DamageSource.isExplosion() && canItemBurn(item.getEntityItem())) return false;
+		if
+            //TODO immune to any damage items config
+            (item.isEntityInvulnerable())
+            return false;
+        else if
+            //TODO explosion-resistance items config
+            (item.getEntityItem() != null && item.getEntityItem().getItem() == Items.nether_star && par1DamageSource.isExplosion() && canItemBurn(item.getEntityItem()))
+            return false;
         else {
         	if ((par1DamageSource == DamageSource.lava | par1DamageSource == DamageSource.onFire | par1DamageSource == DamageSource.inFire) && !canItemBurn(item.getEntityItem())) return false;
+            //TODO cactus-resistance items config
         	if (par1DamageSource == DamageSource.cactus) return false;
 
         	setHealth(item, (int) (getHealth(item) - 1));
@@ -369,33 +358,40 @@ public class ServerPhysic {
         if (!(!item.isImmuneToFire() && (flag && (item.getDataWatcher().getWatchableObjectByte(0) & 1 << 0) != 0))) return false;
         return canItemBurn(item.getEntityItem());
 	}
-
     public static boolean swim = false;
-	public static boolean canItemSwim(ItemStack stack) {
+    public static boolean canItemSwim(ItemStack stack, Fluid fluid) {
         if (stack != null) {
             if(!ItemDummyContainer.invertFloatList) {
                 swim = false;
                 for (ItemsWithMetaRegistryFloat.ItemWithMetaFloat itemWithMetaFloat : ItemsWithMetaRegistryFloat.FloatItems) {
-                    if(!itemWithMetaFloat.ignoremeta) {
-                        if(stack.getItem() == itemWithMetaFloat.item && stack.getItemDamage() == itemWithMetaFloat.metadata){
-                            swim = true;
-                        }
-                    } else {
-                        if(stack.getItem() == itemWithMetaFloat.item){
-                            swim = true;
+                    for(int i = 0; i < itemWithMetaFloat.liquids.length; i++){
+                        if(itemWithMetaFloat.liquids[i].equals(fluid.getUnlocalizedName())){
+                            if (!itemWithMetaFloat.ignoremeta) {
+                                if (stack.getItem() == itemWithMetaFloat.item && stack.getItemDamage() == itemWithMetaFloat.metadata) {
+                                    swim = true;
+                                }
+                            } else {
+                                if (stack.getItem() == itemWithMetaFloat.item) {
+                                    swim = true;
+                                }
+                            }
                         }
                     }
                 }
             } else {
                 swim = true;
                 for (ItemsWithMetaRegistryFloat.ItemWithMetaFloat itemWithMetaFloat : ItemsWithMetaRegistryFloat.FloatItems) {
-                    if(!itemWithMetaFloat.ignoremeta) {
-                        if(stack.getItem() == itemWithMetaFloat.item && stack.getItemDamage() == itemWithMetaFloat.metadata) {
-                            swim = false;
-                        }
-                    } else {
-                        if(stack.getItem() == itemWithMetaFloat.item){
-                            swim = false;
+                    for(int i = 0; i < itemWithMetaFloat.liquids.length; i++) {
+                        if (itemWithMetaFloat.liquids[i].equals(fluid.getUnlocalizedName())) {
+                            if (!itemWithMetaFloat.ignoremeta) {
+                                if (stack.getItem() == itemWithMetaFloat.item && stack.getItemDamage() == itemWithMetaFloat.metadata) {
+                                    swim = false;
+                                }
+                            } else {
+                                if (stack.getItem() == itemWithMetaFloat.item) {
+                                    swim = false;
+                                }
+                            }
                         }
                     }
                 }
@@ -404,6 +400,7 @@ public class ServerPhysic {
         }
         return false;
     }
+
     public static boolean burn = true;
 	public static boolean canItemBurn(ItemStack stack) {
         if (stack != null) {
