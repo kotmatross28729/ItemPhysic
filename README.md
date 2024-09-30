@@ -111,22 +111,21 @@ With `B:invertFloatList=true` everything is exactly the opposite: the items spec
 
 #### TODO:
 
-| Name of TODO feature                                                                                               | Priority |
-|--------------------------------------------------------------------------------------------------------------------|----------|
-| Fix item despawn option not working                                                                                | High     |
-| Backport some functions to be able to choose stuff like if an item should be cactus-resistant from newer versions  | High     |
-| Fix a bug causing items to spin on thaumcraft pedestals                                                            | High     |
-| Fix item despawn option not working                                                                                | Medium   |
+| Name of TODO feature                                              | Priority |
+|-------------------------------------------------------------------|----------|
+| Fix item despawn option not working                               | High     |
+| Fix items spinning on thaumcraft pedestals                        | High     |
+| Fix floating items spinning eternally when they reach the surface | Medium   |
+
+---
 
 ### In the future:
 
-| Name of feature                                                      | Priority |
-|----------------------------------------------------------------------|----------|
-| List of items that are explosion resistant                           | High     |
-| List of items that are cactus resistant                              | High     |
-| List of items that are undestroyable (good luck getting rid of them) | High     |
-| Backport igniting items                                              | Medium   |
-| Backport item fall sounds                                            | Medium   |
-| Backport show tooltip option                                         | Medium   |
-
-
+| Name of feature                                                          | Priority |
+|--------------------------------------------------------------------------|----------|
+| Add List of items that are explosion resistant                           | High     |
+| Add List of items that are cactus resistant                              | High     |
+| Add List of items that are undestroyable (good luck getting rid of them) | High     |
+| Backport igniting items                                                  | Medium   |
+| Backport item fall sounds                                                | Medium   |
+| Backport show tooltip option                                             | Medium   |
