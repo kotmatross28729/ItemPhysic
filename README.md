@@ -37,21 +37,15 @@ A minecraft forge mod that adds some physic to thrown items.
 
   - Added forge fluid system support (for floatList)
 
+  - Added default support for some vanilla items, as well as Thaumcraft and etfuturum
 
-- Added default support for some vanilla items, as well as Thaumcraft and etfuturum
-
+  -  Added patch for `OreDictionary.WILDCARD_VALUE`
 
 - Fully formatted README
 
-
-- Added patch for `OreDictionary.WILDCARD_VALUE`
-
-
 - Fixed floating items spinning very fast when they reach the surface
 
-
 - Fixed item despawn option not working
-
 
 - Backported items slowing down in the cobweb
 
