@@ -37,6 +37,24 @@ A minecraft forge mod that adds some physic to thrown items.
 
   - Added forge fluid system support (for floatList)
 
+
+- Added default support for some vanilla items, as well as Thaumcraft and etfuturum
+
+
+- Fully formatted README
+
+
+- Added patch for `OreDictionary.WILDCARD_VALUE`
+
+
+- Fixed floating items spinning very fast when they reach the surface
+
+
+- Fixed item despawn option not working
+
+
+- Backported items slowing down in the web
+
 ---
 
 ## Documentation on lists:
@@ -113,8 +131,8 @@ With `B:invertFloatList=true` everything is exactly the opposite: the items spec
 
 | Name of TODO feature                                                                                                                                                 | Priority | State |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|-------|
-| ~~Fix item despawn option not working~~                                                                                                                              | High     | ✅     |
-| ~~Fix floating items spinning eternally when they reach the surface~~                                                                                                | Medium   | ✅     |
+| Fix item despawn option not working                                                                                                                                  | High     | ✅     |
+| Fix floating items spinning eternally (very fast) when they reach the surface                                                                                        | Medium   | ✅     |
 | Fix items spinning on thaumcraft pedestals (I don't know how to fix it yet. The only thing that comes to mind is to do Inject through mixins... I'll think about it) | Low      | ❌     |
 
 ---
