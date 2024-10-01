@@ -1,16 +1,21 @@
-[
 {
+  "modListVersion": 2,
+  "modList": [{
   "modid": "${modId}",
   "name": "${modName}",
-  "description": "Example placeholder mod.",
+  "description": "A minecraft mod that adds physics to thrown items.",
   "version": "${modVersion}",
   "mcversion": "${minecraftVersion}",
-  "url": "",
+  "url": "https://github.com/kotmatross28729/ItemPhysic-Legacy-Unofficial",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
-  "logoFile": "",
+  "authorList": ["CreativeMD, HRudyPlayZ, Kotmatross"],
+  "credits": "CreativeMD",
+  "logoFile": "title.png",
   "screenshots": [],
-  "dependencies": []
-}
-]
+  "parent": "",
+  "requiredMods": [],
+  "dependencies": [],
+  "dependants": [],
+  "useDependencyInformation": false
+  }]
+  }

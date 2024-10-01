@@ -35,7 +35,6 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class ItemDummyContainer extends DummyModContainer {
 
@@ -45,8 +44,8 @@ public class ItemDummyContainer extends DummyModContainer {
 	public static final String VERSION = "1.2.2" + " kotmatross edition";
 	public static final String DESCRIPTION = "A minecraft mod that adds physics to thrown items.";
 	public static final String CREDITS = "CreativeMD";
-	public static final String URL = "";
-	public static final boolean LOGO = false;
+	public static final String URL = "https://github.com/kotmatross28729/ItemPhysic-Legacy-Unofficial";
+	public static final boolean LOGO = true;
 
 	public ItemDummyContainer() {
 
@@ -63,7 +62,7 @@ public class ItemDummyContainer extends DummyModContainer {
 		meta.url = URL;
 		meta.updateUrl = "";
 		meta.screenshots = new String[0];
-		meta.logoFile = "";
+		meta.logoFile = "title.png";
 	}
 
 	@Override
@@ -126,7 +125,7 @@ public class ItemDummyContainer extends DummyModContainer {
 		evt.getModMetadata().description = EnumChatFormatting.GRAY + DESCRIPTION;
 
 		// Mod logo
-		if (LOGO) evt.getModMetadata().logoFile = "title.png";
+//		if (LOGO) evt.getModMetadata().logoFile = "title.png";
 
 
 		config = new Configuration(evt.getSuggestedConfigurationFile());

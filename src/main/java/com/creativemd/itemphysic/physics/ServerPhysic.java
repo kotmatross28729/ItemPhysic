@@ -24,8 +24,6 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.IFluidBlock;
-import org.apache.commons.logging.Log;
-import org.apache.logging.log4j.LogManager;
 
 import java.util.Iterator;
 import java.util.List;
