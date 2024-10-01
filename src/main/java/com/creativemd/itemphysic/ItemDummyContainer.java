@@ -133,7 +133,7 @@ public class ItemDummyContainer extends DummyModContainer {
 		config.load();
 
 		if (!ItemTransformer.isLite) {
-			enableItemDespawn = config.getBoolean("enableItemDespawn", "Item", true, "Whether to allow items to despawn after some times");
+			enableItemDespawn = config.getBoolean("enableItemDespawn", "Item", true, "Whether to allow items to despawn after some times. False to disable despawn.");
 			despawnItem = config.getInt("despawn","Item",6000, 0, 2147483647, "Number of ticks an item takes to despawn (affected by enableItemDespawn).");
 			customPickup = config.getBoolean("customPickup", "Item", false, "Whether to enable a custom pickup mechanic with right click or sneaking (disables auto pickup).");
 			customThrow = config.getBoolean("customThrow", "Item", true, "Whether to enable a custom throwing mechanic when you hold the button.");
@@ -266,6 +266,8 @@ public class ItemDummyContainer extends DummyModContainer {
 		ClientPhysic.tick = System.nanoTime();
 	}
 
+    public static boolean isTCLoaded = false;
+
     @Subscribe
 	public void postInit(FMLPostInitializationEvent evt) {
         //This approach also acts like a hash function, initializing 2 lists at a late stage of loading so that the lists don't have to be checked constantly
@@ -358,6 +360,10 @@ public class ItemDummyContainer extends DummyModContainer {
                     }
                 }
             }
+        }
+
+        if(Loader.isModLoaded("Thaumcraft")){
+            isTCLoaded = true;
         }
     }
 

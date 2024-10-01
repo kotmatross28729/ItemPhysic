@@ -124,21 +124,25 @@ public class ServerPhysic {
 
 	            if (item.onGround) item.motionY *= -0.5D;
             }
-//TODO despawn option not working
-            if (item.age < 1 && item.lifespan == 6000) item.lifespan = ItemDummyContainer.despawnItem;
-            ++item.age;
-/**
-            if(item.lifespan == 6000 && item.lifespan != ItemDummyContainer.despawnItem)
-                item.lifespan = ItemDummyContainer.despawnItem;
-*/
-            if (!item.worldObj.isRemote && item.age >= item.lifespan) {
-                if (stack != null) {
-                    ItemExpireEvent event = new ItemExpireEvent(item, (stack.getItem() == null ? 6000 : stack.getItem().getEntityLifespan(stack, item.worldObj)));
-                    if (MinecraftForge.EVENT_BUS.post(event)) item.lifespan += event.extraLife;
-                    else item.setDead();
+
+            if(ItemDummyContainer.enableItemDespawn) {
+                ++item.age; //TICKS
+                if (item.lifespan == 6000 && item.lifespan != ItemDummyContainer.despawnItem) {
+                    item.lifespan = ItemDummyContainer.despawnItem;
                 }
-                else item.setDead();
+                if (!item.worldObj.isRemote && item.age >= item.lifespan) {
+                    if (stack != null) {
+                        ItemExpireEvent event = new ItemExpireEvent(item, (stack.getItem() == null ? 6000 : stack.getItem().getEntityLifespan(stack, item.worldObj)));
+                        if (MinecraftForge.EVENT_BUS.post(event)) //Is canceled?
+                            item.lifespan += event.extraLife; //yes - live
+                        else
+                            item.setDead(); //no - die
+                    } else item.setDead();
+                }
+            } else {
+                ++item.age; //TICKS FOR ANIMATION
             }
+
 
             if (stack != null && stack.stackSize <= 0) item.setDead();
         }

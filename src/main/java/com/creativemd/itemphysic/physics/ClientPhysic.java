@@ -1,9 +1,11 @@
 package com.creativemd.itemphysic.physics;
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -50,13 +52,13 @@ public class ClientPhysic {
 	@SideOnly(Side.CLIENT)
 	public static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 
+    private static Field isInWeb = ReflectionHelper.findField(Entity.class, new String[] { "isInWeb", "field_70134_J" });
+
 
 	@SideOnly(Side.CLIENT)
 	public static void doRender(Entity par1Entity, double x, double y, double z, float par8, float par9) {
 		rotation = (double)(System.nanoTime()-tick)/2500000*ItemDummyContainer.rotateSpeed;
 		if (!mc.inGameHasFocus) rotation = 0;
-
-        //TODO maybe fix thaumcraft pedestals spin issue (somehow detect if item renders on pedestal, and cancel rotation)
 
 		EntityItem item = ((EntityItem)par1Entity);
 		ItemStack itemstack = item.getEntityItem();
@@ -122,7 +124,8 @@ public class ClientPhysic {
                     if (item.rotationPitch > 360)
                         item.rotationPitch = 0;
 
-                    if (!Double.isNaN(item.posX) && !Double.isNaN(item.posY) && !Double.isNaN(item.posZ) && item.worldObj != null) {
+                    //ROTATIONS
+                    if (!Double.isNaN(item.posX) && !Double.isNaN(item.posY) && !Double.isNaN(item.posZ) && item.worldObj != null && item.age != 0) {
                          if (!item.onGround) {
                     		double rotation = ClientPhysic.rotation*2;
                     		Fluid fluid = ServerPhysic.getFluid(item);
@@ -133,6 +136,10 @@ public class ClientPhysic {
                                 if(fluid != null)
                                     rotation /= (float) ((fluid.getDensity() / 1000) * 10);
                             }
+                             try {
+                                 if (isInWeb.getBoolean(item))
+                                     rotation /= 50;
+                             } catch (IllegalArgumentException | IllegalAccessException e) {}
                                 item.rotationPitch += rotation;
                     	}
                     }
@@ -246,7 +253,7 @@ public class ClientPhysic {
             	GL11.glRotatef(item.rotationYaw, 0.0F, 0.0F, 1.0F);
             }
 
-            if (!Double.isNaN(item.posX) && !Double.isNaN(item.posY) && !Double.isNaN(item.posZ) && item.worldObj != null && !RenderItem.renderInFrame) {
+            if (!Double.isNaN(item.posX) && !Double.isNaN(item.posY) && !Double.isNaN(item.posZ) && item.worldObj != null && !RenderItem.renderInFrame && item.age != 0) {
 	            if (item.onGround) item.rotationPitch = 0;
 	            else {
                     double rotation = ClientPhysic.rotation*2;
@@ -258,6 +265,10 @@ public class ClientPhysic {
                         if(fluid != null)
                             rotation /= (float) ((fluid.getDensity() / 1000) * 10);
                     }
+                    try {
+                        if (isInWeb.getBoolean(item))
+                            rotation /= 50;
+                    } catch (IllegalArgumentException | IllegalAccessException e) {}
                     item.rotationPitch += rotation;
 	            }
             }
