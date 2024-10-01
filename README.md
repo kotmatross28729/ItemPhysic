@@ -124,8 +124,8 @@ With `B:invertFloatList=true` everything is exactly the opposite: the items spec
 | Name of feature                                                          | Priority | State |
 |--------------------------------------------------------------------------|----------|-------|
 | Add List of items that are explosion resistant                           | High     | ❌     |
-| Add List of items that are cactus resistant                              | High     | ❌     |
 | Add List of items that are undestroyable (good luck getting rid of them) | High     | ❌     |
+| Add config option responsible for the resistance of items to cactus      | High     | ❌     |
 | Backport igniting items                                                  | Medium   | ❌     |
 | Backport item fall sounds                                                | Medium   | ❌     |
 | Backport show tooltip option                                             | Medium   | ❌     |
