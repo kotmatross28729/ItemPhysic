@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -80,8 +81,7 @@ public class ClientPhysic {
             float f7;
             int k;
 
-            if (ForgeHooksClient.renderEntityItem(item, itemstack, 0, 0, random, mc.renderEngine, BlockRenderer, b0)) {}
-            else if (itemstack.getItemSpriteNumber() == 0 && itemstack.getItem() instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType())) {
+             if ((!ForgeHooksClient.renderEntityItem(item, itemstack, 0, 0, random, mc.renderEngine, BlockRenderer, b0)) && itemstack.getItemSpriteNumber() == 0 && itemstack.getItem() instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType())) {
                 Block block = Block.getBlockFromItem(itemstack.getItem());
 
                 if (RenderItem.renderInFrame) {
@@ -122,43 +122,18 @@ public class ClientPhysic {
                     if (item.rotationPitch > 360)
                         item.rotationPitch = 0;
 
-                    if (item != null && !Double.isNaN(item.posX) && !Double.isNaN(item.posY) && !Double.isNaN(item.posZ) && item.worldObj != null) {
-                    	if (item.onGround) {
-                    		/*for (int i = 0; i < 4; i++) {
-								double rotation = i*90;
-								double range = 5;
-								if (item.rotationPitch > rotation-range && item.rotationPitch < rotation+range)
-									item.rotationPitch = (float)rotation;
-							}
-                    		if (item.rotationPitch != 0 && item.rotationPitch != 90 && item.rotationPitch != 180 && item.rotationPitch != 270)
-                    		{
-                    			double Abstand0 = formPositiv(item.rotationPitch);
-                    			double Abstand90 = formPositiv(item.rotationPitch-90);
-                    			double Abstand180 = formPositiv(item.rotationPitch-180);
-                    			double Abstand270 = formPositiv(item.rotationPitch-270);
-                    			if (Abstand0 <= Abstand90 && Abstand0 <= Abstand180 && Abstand0 <= Abstand270)
-                    				if (item.rotationPitch < 0)item.rotationPitch += rotation;
-                    				else item.rotationPitch -= rotation;
-                    			if (Abstand90 < Abstand0 && Abstand90 <= Abstand180 && Abstand90 <= Abstand270)
-                    				if (item.rotationPitch-90 < 0)item.rotationPitch += rotation;
-                    				else item.rotationPitch -= rotation;
-                    			if (Abstand180 < Abstand90 && Abstand180 < Abstand0 && Abstand180 <= Abstand270)
-                    				if (item.rotationPitch-180 < 0)item.rotationPitch += rotation;
-                    				else item.rotationPitch -= rotation;
-                    			if (Abstand270 < Abstand90 && Abstand270 < Abstand180 && Abstand270 < Abstand0)
-                    				if (item.rotationPitch-270 < 0)item.rotationPitch += rotation;
-                    				else item.rotationPitch -= rotation;
-
-                    		}*/
-                    	} else {
+                    if (!Double.isNaN(item.posX) && !Double.isNaN(item.posY) && !Double.isNaN(item.posZ) && item.worldObj != null) {
+                         if (!item.onGround) {
                     		double rotation = ClientPhysic.rotation*2;
                     		Fluid fluid = ServerPhysic.getFluid(item);
-                    		if (fluid == null)
+                            if(fluid != null)
+                                rotation /= (float) ((fluid.getDensity() / 1000) * 10);
+                            else {
                                 fluid = ServerPhysic.getFluid(item, true);
-                    		else
-                                //TODO maybe fix rotation at water's surface? Don't know how tho
-                                rotation /= (double) (fluid.getDensity()/1000) * 10;
-                    		item.rotationPitch += rotation;
+                                if(fluid != null)
+                                    rotation /= (float) ((fluid.getDensity() / 1000) * 10);
+                            }
+                                item.rotationPitch += rotation;
                     	}
                     }
 
@@ -192,7 +167,7 @@ public class ClientPhysic {
                         else renderDroppedItem(item, iicon1, b0, par9, 1.0F, 1.0F, 1.0F,  j);
                     }
                 } else {
-                    if (itemstack != null && itemstack.getItem() instanceof ItemCloth) {
+                    if (itemstack.getItem() instanceof ItemCloth) {
                         GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
                         GL11.glEnable(GL11.GL_BLEND);
                         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
@@ -216,7 +191,7 @@ public class ClientPhysic {
                     }
                     else renderDroppedItem(item, iicon, b0, par9, 1.0F, 1.0F, 1.0F);
 
-                    if (itemstack != null && itemstack.getItem() instanceof ItemCloth) GL11.glDisable(GL11.GL_BLEND);
+                    if (itemstack.getItem() instanceof ItemCloth) GL11.glDisable(GL11.GL_BLEND);
                 }
             }
 
@@ -239,6 +214,10 @@ public class ClientPhysic {
 
 	@SideOnly(Side.CLIENT)
 	public static void renderDroppedItem(EntityItem item, IIcon par2Icon, int par3, float par4, float par5, float par6, float par7, int pass) {
+        if(item == null) {
+            return;
+        }
+
 		Tessellator tessellator = Tessellator.instance;
 
         if (par2Icon == null) {
@@ -259,7 +238,7 @@ public class ClientPhysic {
         if (RenderManager.instance.options.fancyGraphics) {
             GL11.glPushMatrix();
 
-            if (ItemRenderer.renderInFrame) {
+            if (RenderItem.renderInFrame) {
             	GL11.glTranslatef(0.0F, 0.09F, 0.0F);
                 GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
             } else {
@@ -267,19 +246,19 @@ public class ClientPhysic {
             	GL11.glRotatef(item.rotationYaw, 0.0F, 0.0F, 1.0F);
             }
 
-            if (item != null && !Double.isNaN(item.posX) && !Double.isNaN(item.posY) && !Double.isNaN(item.posZ) && item.worldObj != null && !RenderItem.renderInFrame) {
+            if (!Double.isNaN(item.posX) && !Double.isNaN(item.posY) && !Double.isNaN(item.posZ) && item.worldObj != null && !RenderItem.renderInFrame) {
 	            if (item.onGround) item.rotationPitch = 0;
 	            else {
-	            	double rotation = ClientPhysic.rotation*2;
-            		Fluid fluid = ServerPhysic.getFluid(item);
-
-            		if (fluid != null) rotation /= fluid.getDensity()/1000*10;
-
-            		item.rotationPitch += rotation;
-
-	            	//if (item.isInsideOfMaterial(Material.water) | item.worldObj.getBlock((int)item.posX, (int)item.posY-1, (int)item.posZ).getMaterial().equals(Material.water) | item.worldObj.getBlock((int)item.posX, (int)item.posY, (int)item.posZ).getMaterial().equals(Material.water))
-	            		//item.rotationPitch += rotation/1600000*ItemDummyContainer.rotateSpeed;
-	            	//else item.rotationPitch += rotation/20000*ItemDummyContainer.rotateSpeed;
+                    double rotation = ClientPhysic.rotation*2;
+                    Fluid fluid = ServerPhysic.getFluid(item);
+                    if(fluid != null)
+                        rotation /= (float) ((fluid.getDensity() / 1000) * 10);
+                    else {
+                        fluid = ServerPhysic.getFluid(item, true);
+                        if(fluid != null)
+                            rotation /= (float) ((fluid.getDensity() / 1000) * 10);
+                    }
+                    item.rotationPitch += rotation;
 	            }
             }
 
@@ -314,7 +293,7 @@ public class ClientPhysic {
                 else mc.renderEngine.bindTexture(TextureMap.locationItemsTexture);
 
                 GL11.glColor4f(par5, par6, par7, 1.0F);
-                mc.entityRenderer.itemRenderer.renderItemIn2D(tessellator, f15, f4, f14, f5, ((IIcon)par2Icon).getIconWidth(), ((IIcon)par2Icon).getIconHeight(), f9);
+                net.minecraft.client.renderer.ItemRenderer.renderItemIn2D(tessellator, f15, f4, f14, f5, ((IIcon)par2Icon).getIconWidth(), ((IIcon)par2Icon).getIconHeight(), f9);
 
                 if (itemstack.hasEffect(pass)) {
                     GL11.glDepthFunc(GL11.GL_EQUAL);
@@ -331,14 +310,14 @@ public class ClientPhysic {
                     float f13 = (float)(Minecraft.getSystemTime() % 3000L) / 3000.0F * 8.0F;
                     GL11.glTranslatef(f13, 0.0F, 0.0F);
                     GL11.glRotatef(-50.0F, 0.0F, 0.0F, 1.0F);
-                    mc.entityRenderer.itemRenderer.renderItemIn2D(tessellator, 0.0F, 0.0F, 1.0F, 1.0F, 255, 255, f9);
+                    net.minecraft.client.renderer.ItemRenderer.renderItemIn2D(tessellator, 0.0F, 0.0F, 1.0F, 1.0F, 255, 255, f9);
                     GL11.glPopMatrix();
                     GL11.glPushMatrix();
                     GL11.glScalef(f12, f12, f12);
                     f13 = (float)(Minecraft.getSystemTime() % 4873L) / 4873.0F * 8.0F;
                     GL11.glTranslatef(-f13, 0.0F, 0.0F);
                     GL11.glRotatef(10.0F, 0.0F, 0.0F, 1.0F);
-                    mc.entityRenderer.itemRenderer.renderItemIn2D(tessellator, 0.0F, 0.0F, 1.0F, 1.0F, 255, 255, f9);
+                    net.minecraft.client.renderer.ItemRenderer.renderItemIn2D(tessellator, 0.0F, 0.0F, 1.0F, 1.0F, 255, 255, f9);
                     GL11.glPopMatrix();
                     GL11.glMatrixMode(GL11.GL_MODELVIEW);
                     GL11.glDisable(GL11.GL_BLEND);

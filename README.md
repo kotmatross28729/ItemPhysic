@@ -111,11 +111,11 @@ With `B:invertFloatList=true` everything is exactly the opposite: the items spec
 
 #### TODO:
 
-| Name of TODO feature                                              | Priority |
-|-------------------------------------------------------------------|----------|
-| Fix item despawn option not working                               | High     |
-| Fix items spinning on thaumcraft pedestals                        | High     |
-| Fix floating items spinning eternally when they reach the surface | Medium   |
+| Name of TODO feature                                                  | Priority |
+|-----------------------------------------------------------------------|----------|
+| Fix item despawn option not working                                   | High     |
+| Fix items spinning on thaumcraft pedestals                            | High     |
+| ~~Fix floating items spinning eternally when they reach the surface~~ | Medium   |
 
 ---
 

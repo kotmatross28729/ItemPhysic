@@ -149,6 +149,9 @@ public class ServerPhysic {
     }
 
 	public static Fluid getFluid(EntityItem item, boolean below) {
+        if(item == null || item.worldObj == null)
+            return null;
+
         double d0 = item.posY + (double)item.getEyeHeight();
         int i = MathHelper.floor_double(item.posX);
         int j = MathHelper.floor_float((float)MathHelper.floor_double(d0));
