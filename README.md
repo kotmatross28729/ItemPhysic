@@ -53,7 +53,7 @@ A minecraft forge mod that adds some physic to thrown items.
 - Fixed item despawn option not working
 
 
-- Backported items slowing down in the web
+- Backported items slowing down in the cobweb
 
 ---
 
