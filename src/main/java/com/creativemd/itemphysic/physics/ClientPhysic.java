@@ -53,7 +53,8 @@ public class ClientPhysic {
 
     private static final Field isInWeb = ReflectionHelper.findField(Entity.class, "isInWeb", "field_70134_J");
 
-
+//    private static final Field customItemRenderers = ReflectionHelper.findField(MinecraftForgeClient.class, "customItemRenderers");
+    
 	@SideOnly(Side.CLIENT)
 	public static void doRender(Entity par1Entity, double x, double y, double z, float par8, float par9) {
 		rotation = (double)(System.nanoTime()-tick)/2500000* ItemPhysic.rotateSpeed;
@@ -209,6 +210,37 @@ public class ClientPhysic {
                     if (itemstack.getItem() instanceof ItemCloth) GL11.glDisable(GL11.GL_BLEND);
                 }
             }
+            //Not for now, maybe after switching to mixins
+//            else {
+//                if (!RenderItem.renderInFrame) {
+//                    GL11.glRotatef(item.rotationYaw, 0.0F, 1.0F, 0.0F);
+//                    GL11.glRotatef(item.rotationPitch, 1.0F, 0.0F, 0.0F);
+//                }
+//                GL11.glPushMatrix();
+//
+//                if (item.rotationPitch > 360) item.rotationPitch = 0;
+//                    //ROTATIONS
+//                if (!Double.isNaN(item.posX) && !Double.isNaN(item.posY) && !Double.isNaN(item.posZ) && item.worldObj != null && item.age != 0) {
+//                    if (!item.onGround) {
+//                        double rotation = ClientPhysic.rotation*2;
+//                        Fluid fluid = ServerPhysic.getFluid(item);
+//                        if(fluid != null)
+//                            rotation /= (float) ((fluid.getDensity() / 1000) * 10);
+//                        else {
+//                            fluid = ServerPhysic.getFluid(item, true);
+//                            if(fluid != null)
+//                                rotation /= (float) ((fluid.getDensity() / 1000) * 10);
+//                        }
+//                        try {
+//                            if (isInWeb.getBoolean(item))
+//                                rotation /= 50;
+//                        } catch (IllegalArgumentException | IllegalAccessException ignored) {}
+//                            item.rotationPitch += rotation;
+//                        }
+//                    }
+//                customRenderer.renderItem(ENTITY, itemstack);
+//                    GL11.glPopMatrix();
+//            }
 
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
             GL11.glPopMatrix();
