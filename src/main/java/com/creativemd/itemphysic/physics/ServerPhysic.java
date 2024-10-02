@@ -3,7 +3,11 @@ package com.creativemd.itemphysic.physics;
 import com.creativemd.itemphysic.ItemPhysic;
 import com.creativemd.itemphysic.ItemTransformer;
 import com.creativemd.itemphysic.list.ItemsWithMetaRegistryBurn;
+import com.creativemd.itemphysic.list.ItemsWithMetaRegistryExplosion;
 import com.creativemd.itemphysic.list.ItemsWithMetaRegistryFloat;
+import com.creativemd.itemphysic.list.ItemsWithMetaRegistrySulfuricAcid;
+import com.creativemd.itemphysic.list.ItemsWithMetaRegistryUndestroyable;
+import com.hbm.lib.ModDamageSource;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import net.minecraft.block.Block;
@@ -62,6 +66,7 @@ public class ServerPhysic {
 //        }
 //    }
 
+    //For transformer
 	public static void update(EntityItem item) {
 		ItemStack stack = item.getDataWatcher().getWatchableObjectItemStack(10);
         if (stack != null && stack.getItem() != null) {
@@ -80,7 +85,8 @@ public class ServerPhysic {
 
             float f = 0.98F;
             Fluid fluid = getFluid(item);
-            if (fluid == null) item.motionY -= 0.04D;
+            if (fluid == null)
+                item.motionY -= 0.04D; //GRAVITY
             else {
             	double density = (double)fluid.getDensity()/1000D;
             	double speed = - 1/density * 0.01;
@@ -306,27 +312,29 @@ public class ServerPhysic {
 		}
         return false;
     }
-
+    //For transformer
 	public static boolean attackEntityFrom(EntityItem item, DamageSource par1DamageSource, float par2) {
-		if
-            //TODO immune to any damage items config
-            (item.isEntityInvulnerable())
-            return false;
-        else if
-            //TODO explosion-resistance items config
-            (item.getEntityItem() != null && item.getEntityItem().getItem() == Items.nether_star && par1DamageSource.isExplosion() && canItemBurn(item.getEntityItem()))
-            return false;
-        else {
-        	if ((par1DamageSource == DamageSource.lava | par1DamageSource == DamageSource.onFire | par1DamageSource == DamageSource.inFire) && !canItemBurn(item.getEntityItem())) return false;
-            //TODO cactus-resistance items config
-        	if (par1DamageSource == DamageSource.cactus) return false;
-
-        	setHealth(item, (int) (getHealth(item) - 1));
-
-            if (getHealth(item)  <= 0) item.setDead();
-
-            return false;
+        if(item.getEntityItem() != null) {
+            if (isItemUndestroyable(item.getEntityItem()) || item.isEntityInvulnerable())
+                return false;
+            else if (par1DamageSource.isExplosion() && !canItemExplode(item.getEntityItem()))
+                return false;
+            else if ((par1DamageSource == DamageSource.lava || par1DamageSource == DamageSource.onFire || par1DamageSource == DamageSource.inFire) && !canItemBurn(item.getEntityItem()))
+                return false;
+            else if (par1DamageSource == DamageSource.cactus && ItemPhysic.disableCactusDamage)
+                return false;
+            else if(ItemPhysic.isHBMLoaded && par1DamageSource == ModDamageSource.acid && !canItemDissolve(item.getEntityItem()))
+                    return false;
+            else {
+                if(par1DamageSource.isExplosion())
+                    item.setDead();
+                setHealth(item, (getHealth(item) - 1));
+                if (getHealth(item) <= 0)
+                    item.setDead();
+            }
         }
+            return false;
+
     }
 
 	public static int getHealth(EntityItem item) {
@@ -361,10 +369,14 @@ public class ServerPhysic {
 	}
 
 
+    //For transformer
 	public static boolean isItemBurning(EntityItem item) {
-		boolean flag = item.worldObj != null && item.worldObj.isRemote;
-        if (!(!item.isImmuneToFire() && (flag && (item.getDataWatcher().getWatchableObjectByte(0) & 1 << 0) != 0))) return false;
-        return canItemBurn(item.getEntityItem());
+//        boolean flag = item.worldObj != null && item.worldObj.isRemote;
+//        if (!(!item.isImmuneToFire() && (flag && (item.getDataWatcher().getWatchableObjectByte(0) & 1 << 0) != 0))) return false;
+//        return canItemBurn(item.getEntityItem());
+
+        boolean flag = item.worldObj != null && item.worldObj.isRemote;
+        return canItemBurn(item.getEntityItem()) && !item.isImmuneToFire && (item.fire > 0 || flag && item.getFlag(0));
 	}
     public static boolean swim = false;
     public static boolean canItemSwim(ItemStack stack, Fluid fluid) {
@@ -443,6 +455,111 @@ public class ServerPhysic {
         }
         return true;
 	}
+
+    public static boolean explosion = true;
+    public static boolean canItemExplode(ItemStack stack) {
+        if (stack != null) {
+            if(!ItemPhysic.invertExplosionList) {
+                explosion = true;
+                for (ItemsWithMetaRegistryExplosion.ItemsWithMetaExplosion itemWithMetaExplosion : ItemsWithMetaRegistryExplosion.ExplosionItems) {
+                    if(!itemWithMetaExplosion.ignoremeta) {
+                        if(stack.getItem() == itemWithMetaExplosion.item && stack.getItemDamage() == itemWithMetaExplosion.metadata) {
+                            explosion = false;
+                        }
+                    } else {
+                        if(stack.getItem() == itemWithMetaExplosion.item) {
+                            explosion = false;
+                        }
+                    }
+                }
+            } else {
+                explosion = false;
+                for (ItemsWithMetaRegistryExplosion.ItemsWithMetaExplosion itemWithMetaExplosion : ItemsWithMetaRegistryExplosion.ExplosionItems) {
+                    if(!itemWithMetaExplosion.ignoremeta) {
+                        if(stack.getItem() == itemWithMetaExplosion.item && stack.getItemDamage() == itemWithMetaExplosion.metadata) {
+                            explosion = true;
+                        }
+                    } else {
+                        if(stack.getItem() == itemWithMetaExplosion.item) {
+                            explosion = true;
+                        }
+                    }
+                }
+            }
+            return explosion;
+        }
+        return true;
+    }
+
+    public static boolean undestroyable = false;
+    public static boolean isItemUndestroyable(ItemStack stack) {
+        if (stack != null) {
+            if(!ItemPhysic.invertUndestroyableList) {
+                undestroyable = false;
+                for (ItemsWithMetaRegistryUndestroyable.ItemWithMetaUndestroyable itemWithMetaUndestroyable : ItemsWithMetaRegistryUndestroyable.UndestroyableItems) {
+                    if(!itemWithMetaUndestroyable.ignoremeta) {
+                        if(stack.getItem() == itemWithMetaUndestroyable.item && stack.getItemDamage() == itemWithMetaUndestroyable.metadata) {
+                            undestroyable = true;
+                        }
+                    } else {
+                        if(stack.getItem() == itemWithMetaUndestroyable.item) {
+                            undestroyable = true;
+                        }
+                    }
+                }
+            } else {
+                undestroyable = true;
+                for (ItemsWithMetaRegistryUndestroyable.ItemWithMetaUndestroyable itemWithMetaUndestroyable : ItemsWithMetaRegistryUndestroyable.UndestroyableItems) {
+                    if(!itemWithMetaUndestroyable.ignoremeta) {
+                        if(stack.getItem() == itemWithMetaUndestroyable.item && stack.getItemDamage() == itemWithMetaUndestroyable.metadata) {
+                            undestroyable = false;
+                        }
+                    } else {
+                        if(stack.getItem() == itemWithMetaUndestroyable.item) {
+                            undestroyable = false;
+                        }
+                    }
+                }
+            }
+            return undestroyable;
+        }
+        return true;
+    }
+
+    public static boolean dissolve = true;
+    public static boolean canItemDissolve(ItemStack stack) {
+        if (stack != null) {
+            if(!ItemPhysic.invertSulfuricAcidList) {
+                dissolve = true;
+                for (ItemsWithMetaRegistrySulfuricAcid.ItemsWithMetaSulfuricAcid itemWithMetaSulfuricAcid : ItemsWithMetaRegistrySulfuricAcid.SulfuricAcidItems) {
+                    if(!itemWithMetaSulfuricAcid.ignoremeta) {
+                        if(stack.getItem() == itemWithMetaSulfuricAcid.item && stack.getItemDamage() == itemWithMetaSulfuricAcid.metadata) {
+                            dissolve = false;
+                        }
+                    } else {
+                        if(stack.getItem() == itemWithMetaSulfuricAcid.item) {
+                            dissolve = false;
+                        }
+                    }
+                }
+            } else {
+                dissolve = false;
+                for (ItemsWithMetaRegistrySulfuricAcid.ItemsWithMetaSulfuricAcid itemWithMetaSulfuricAcid : ItemsWithMetaRegistrySulfuricAcid.SulfuricAcidItems) {
+                    if(!itemWithMetaSulfuricAcid.ignoremeta) {
+                        if(stack.getItem() == itemWithMetaSulfuricAcid.item && stack.getItemDamage() == itemWithMetaSulfuricAcid.metadata) {
+                            dissolve = true;
+                        }
+                    } else {
+                        if(stack.getItem() == itemWithMetaSulfuricAcid.item) {
+                            dissolve = true;
+                        }
+                    }
+                }
+            }
+            return dissolve;
+        }
+        return true;
+    }
 
 //    public static boolean contains(ArrayList list, ItemStack stack) {
 //        if (stack == null || stack.getItem() == null) return false;

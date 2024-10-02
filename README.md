@@ -43,15 +43,35 @@ A minecraft forge mod that adds some physic to thrown items.
 
 - Fully formatted README
 
+
 - Fixed floating items spinning very fast when they reach the surface
+
 
 - Fixed item despawn option not working
 
+
 - Backported items slowing down in the cobweb
+
 
 - Added a config option to disable "Power:" text above HUD && make "Power:" translatable
 
+
 - Fixed item textures not being hidden if the item has a 3D model
+
+
+- Fixed explosive/hydroactive hazards from hbm's ntm not working
+
+
+- Added config option responsible for the resistance of items to cactus
+
+
+- Added List of items that are explosion resistant
+
+
+- Added List of items that are undestroyable
+
+
+- Added List of items that are sulfuric acid-resistant (hbm's ntm)
 
 ---
 
@@ -123,31 +143,34 @@ With `B:invertFloatList=true` everything is exactly the opposite: the items spec
 
 **Note when specifying fluids: if it's vanilla water/lava, use `fluid.tile.water` or `fluid.tile.lava`. When specifying mod fluids, just use `fluid.fluidname` (without .tile)**
 
+
+### For explosionList / undestroyableList / sulfuricAcidList the syntax is exactly the same as for burnList
+
 ---
 
 
 #### TODO:
 
-| Name of TODO feature                                                                           | Priority | State |
-|------------------------------------------------------------------------------------------------|----------|-------|
-| Fix item despawn option not working                                                            | High     | ✅     |
-| Fix floating items spinning eternally (very fast) when they reach the surface                  | Medium   | ✅     |
-| Add a config option to disable "Power:" text above HUD && make "Power:" translatable           | Medium   | ✅     |
-| Fix explosive/hydroactive hazards from hbm's ntm not working (also check gravity in ntm space) | High     | ❌     |
-| Fix item textures not being hidden if the item has a 3D model                                  | High     | ✅     |
-| Add List of items that are explosion resistant                                                 | High     | ❌     |
-| Add List of items that are undestroyable (good luck getting rid of them)                       | High     | ❌     |
-| Add config option responsible for the resistance of items to cactus                            | High     | ❌     |
-
+| Name of TODO feature                                                                 | Priority | State |
+|--------------------------------------------------------------------------------------|----------|-------|
+| Fix item despawn option not working                                                  | High     | ✅     |
+| Fix floating items spinning eternally (very fast) when they reach the surface        | Medium   | ✅     |
+| Add a config option to disable "Power:" text above HUD && make "Power:" translatable | Medium   | ✅     |
+| Fix explosive/hydroactive hazards from hbm's ntm not working                         | High     | ✅     |
+| Fix item textures not being hidden if the item has a 3D model                        | High     | ✅     |
+| Add List of items that are explosion resistant                                       | High     | ✅     |
+| Add List of items that are undestroyable (good luck getting rid of them)             | High     | ✅     |
+| Add config option responsible for the resistance of items to cactus                  | High     | ✅     |
+| Add List of items that are sulfuric acid-resistant (hbm's ntm)                       | High     | ✅     |
+| Backport igniting items                                                              | Medium   | ❌     |
+| Backport item fall sounds                                                            | Medium   | ❌     |
+| Backport show tooltip option                                                         | Medium   | ❌     |
 ---
 
 ### In the future:
 
 | Name of feature                            | Priority | State |
 |--------------------------------------------|----------|-------|
-| Backport igniting items                    | Medium   | ❌     |
-| Backport item fall sounds                  | Medium   | ❌     |
-| Backport show tooltip option               | Medium   | ❌     |
 | Switch to mixins                           | Low      | ❌     |
 | Fix items spinning on thaumcraft pedestals | Low      | ❌     |
 

@@ -54,7 +54,7 @@ public class ClientPhysic {
     private static final Field isInWeb = ReflectionHelper.findField(Entity.class, "isInWeb", "field_70134_J");
 
 //    private static final Field customItemRenderers = ReflectionHelper.findField(MinecraftForgeClient.class, "customItemRenderers");
-    
+
 	@SideOnly(Side.CLIENT)
 	public static void doRender(Entity par1Entity, double x, double y, double z, float par8, float par9) {
 		rotation = (double)(System.nanoTime()-tick)/2500000* ItemPhysic.rotateSpeed;
