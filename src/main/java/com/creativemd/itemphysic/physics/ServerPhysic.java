@@ -1,6 +1,6 @@
 package com.creativemd.itemphysic.physics;
 
-import com.creativemd.itemphysic.ItemDummyContainer;
+import com.creativemd.itemphysic.ItemPhysic;
 import com.creativemd.itemphysic.ItemTransformer;
 import com.creativemd.itemphysic.list.ItemsWithMetaRegistryBurn;
 import com.creativemd.itemphysic.list.ItemsWithMetaRegistryFloat;
@@ -123,10 +123,10 @@ public class ServerPhysic {
 	            if (item.onGround) item.motionY *= -0.5D;
             }
 
-            if(ItemDummyContainer.enableItemDespawn) {
+            if(ItemPhysic.enableItemDespawn) {
                 ++item.age; //TICKS
-                if (item.lifespan == 6000 && item.lifespan != ItemDummyContainer.despawnItem) {
-                    item.lifespan = ItemDummyContainer.despawnItem;
+                if (item.lifespan == 6000 && item.lifespan != ItemPhysic.despawnItem) {
+                    item.lifespan = ItemPhysic.despawnItem;
                 }
                 if (!item.worldObj.isRemote && item.age >= item.lifespan) {
                     if (stack != null) {
@@ -266,9 +266,9 @@ public class ServerPhysic {
     }
 
 	public static void onCollideWithPlayer(EntityItem item, EntityPlayer par1EntityPlayer, boolean needsSneak) {
-		if (ItemDummyContainer.customPickup && needsSneak && !par1EntityPlayer.isSneaking()) return;
+		if (ItemPhysic.customPickup && needsSneak && !par1EntityPlayer.isSneaking()) return;
         if (!item.worldObj.isRemote) {
-            if (!ItemDummyContainer.customPickup && item.delayBeforeCanPickup > 0) return;
+            if (!ItemPhysic.customPickup && item.delayBeforeCanPickup > 0) return;
 
             EntityItemPickupEvent event = new EntityItemPickupEvent(par1EntityPlayer, item);
 
@@ -277,7 +277,7 @@ public class ServerPhysic {
             ItemStack itemstack = item.getEntityItem();
             int i = itemstack.stackSize;
 
-            if ((ItemDummyContainer.customPickup | item.delayBeforeCanPickup <= 0) && (item.func_145798_i() == null || item.lifespan - item.age <= 200 || item.func_145798_i().equals(par1EntityPlayer.getCommandSenderName())) && (event.getResult() == Result.ALLOW || i <= 0 || par1EntityPlayer.inventory.addItemStackToInventory(itemstack))) {
+            if ((ItemPhysic.customPickup | item.delayBeforeCanPickup <= 0) && (item.func_145798_i() == null || item.lifespan - item.age <= 200 || item.func_145798_i().equals(par1EntityPlayer.getCommandSenderName())) && (event.getResult() == Result.ALLOW || i <= 0 || par1EntityPlayer.inventory.addItemStackToInventory(itemstack))) {
                 if (itemstack.getItem() == Item.getItemFromBlock(Blocks.log)) par1EntityPlayer.triggerAchievement(AchievementList.mineWood);
                 if (itemstack.getItem() == Item.getItemFromBlock(Blocks.log2)) par1EntityPlayer.triggerAchievement(AchievementList.mineWood);
                 if (itemstack.getItem() == Items.leather) par1EntityPlayer.triggerAchievement(AchievementList.killCow);
@@ -300,7 +300,7 @@ public class ServerPhysic {
     }
 
 	public static boolean interactFirst(EntityItem item, EntityPlayer par1EntityPlayer) {
-		if (ItemDummyContainer.customPickup) {
+		if (ItemPhysic.customPickup) {
 			onCollideWithPlayer(item, par1EntityPlayer, false);
 			return true;
 		}
@@ -369,7 +369,7 @@ public class ServerPhysic {
     public static boolean swim = false;
     public static boolean canItemSwim(ItemStack stack, Fluid fluid) {
         if (stack != null) {
-            if(!ItemDummyContainer.invertFloatList) {
+            if(!ItemPhysic.invertFloatList) {
                 swim = false;
                 for (ItemsWithMetaRegistryFloat.ItemWithMetaFloat itemWithMetaFloat : ItemsWithMetaRegistryFloat.FloatItems) {
                     for(int i = 0; i < itemWithMetaFloat.liquids.length; i++){
@@ -412,7 +412,7 @@ public class ServerPhysic {
     public static boolean burn = true;
 	public static boolean canItemBurn(ItemStack stack) {
         if (stack != null) {
-            if(!ItemDummyContainer.invertBurnList) {
+            if(!ItemPhysic.invertBurnList) {
                 burn = true;
                 for (ItemsWithMetaRegistryBurn.ItemWithMetaBurn itemWithMetaBurn : ItemsWithMetaRegistryBurn.BurnItems) {
                     if(!itemWithMetaBurn.ignoremeta) {

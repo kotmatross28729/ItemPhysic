@@ -18,6 +18,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,6 +26,7 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -103,7 +105,7 @@ public class EventHandler {
 	@Method(modid = "creativecore")
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (!ItemTransformer.isLite) {
-			if (event.world.isRemote && ItemDummyContainer.customPickup && (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_AIR || event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK)) {
+			if (event.world.isRemote && ItemPhysic.customPickup && (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_AIR || event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK)) {
 				double distance = 100;
 				if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) distance = event.entityPlayer.getDistance(event.x, event.y, event.z);
 				EntityItem entity = getEntityItem(distance, event.entityPlayer);
@@ -133,7 +135,7 @@ public class EventHandler {
         if (renderer == null)
             renderer = (RenderItem) RenderManager.instance.getEntityClassRenderObject(EntityItem.class);
         if (mc != null && mc.thePlayer != null && mc.inGameHasFocus) {
-            if (ItemDummyContainer.customPickup) {
+            if (ItemPhysic.customPickup) {
                 double distance = 100;
 
                 if (mc.objectMouseOver != null)
@@ -191,7 +193,7 @@ public class EventHandler {
                     }
                 }
             }
-            if (ItemDummyContainer.customThrow) {
+            if (ItemPhysic.customThrow) {
                 if (mc.thePlayer.getCurrentEquippedItem() != null) {
                     if (mc.gameSettings.keyBindDrop.getIsKeyPressed()) power++;
                     else {
@@ -208,14 +210,17 @@ public class EventHandler {
                 int width = resolution.getScaledWidth();
                 int height = resolution.getScaledHeight();
 
-                if (power > 0) {
-                    int renderPower = power;
-                    renderPower /= 30;
-                    if (renderPower < 1) renderPower = 1;
-                    if (renderPower > 6) renderPower = 6;
+                if(ItemPhysic.showPowerText) {
+                    if (power > 0) {
+                        int renderPower = power;
+                        renderPower /= 30;
+                        if (renderPower < 1) renderPower = 1;
+                        if (renderPower > 6) renderPower = 6;
 
-                    String text = "Power:" + renderPower;
-                    mc.fontRenderer.drawString(text, width / 2 - mc.fontRenderer.getStringWidth(text) / 2, height / 2 + height / 4, 16579836);
+                        String text = I18n.format("itemphysic.power") + ":" + " " + renderPower;
+
+                        mc.fontRenderer.drawString(text, width / 2 - mc.fontRenderer.getStringWidth(text) / 2, height / 2 + height / 4, 16579836);
+                    }
                 }
 
             } else {

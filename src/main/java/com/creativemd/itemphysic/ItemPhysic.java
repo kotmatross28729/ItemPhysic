@@ -1,4 +1,3 @@
-/**
 package com.creativemd.itemphysic;
 
 import com.creativemd.creativecore.common.packet.CreativeCorePacket;
@@ -8,25 +7,21 @@ import com.creativemd.itemphysic.list.ItemsWithMetaRegistryFloat;
 import com.creativemd.itemphysic.packet.DropPacket;
 import com.creativemd.itemphysic.packet.PickupPacket;
 import com.creativemd.itemphysic.physics.ClientPhysic;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import cpw.mods.fml.common.DummyModContainer;
+import com.creativemd.itemphysic.proxy.CommonProxy;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.LoadController;
 import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.ModMetadata;
-import cpw.mods.fml.common.Optional.Method;
-import cpw.mods.fml.common.event.FMLConstructionEvent;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Optional;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.RenderTickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.oredict.OreDictionary;
@@ -37,133 +32,67 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ItemDummyContainer extends DummyModContainer {
+import static com.creativemd.itemphysic.ItemPhysic.MODID;
+import static com.creativemd.itemphysic.ItemPhysic.NAME;
+import static com.creativemd.itemphysic.ItemPhysic.VERSION;
 
-	// We define the mod properties
-	public static final String MODID = "itemphysic";
-	public static final String NAME = "ItemPhysic";
-	public static final String VERSION = "1.2.3" + " kotmatross edition";
-	public static final String DESCRIPTION = "A minecraft mod that adds physics to thrown items.";
-	public static final String CREDITS = "CreativeMD";
-	public static final String URL = "https://github.com/kotmatross28729/ItemPhysic-Legacy-Unofficial";
-	public static final boolean LOGO = true;
+@Mod(modid = MODID, version = VERSION, name = NAME)
+public class ItemPhysic {
+    public static final String MODID = "itemphysic";
+    public static final String NAME = "ItemPhysic";
+    public static final String VERSION = "1.2.3" + " kotmatross edition";
+    public static final String CLIENTPROXY = "com.creativemd.itemphysic.proxy.ClientProxy";
+    public static final String SERVERPROXY = "com.creativemd.itemphysic.proxy.CommonProxy";
 
-	public ItemDummyContainer() {
+    @Mod.Instance(MODID)
+    public static ItemPhysic instance;
 
-		super(new ModMetadata());
-		ModMetadata meta = getMetadata();
-		meta.modId = MODID;
-		meta.name = NAME;
-		meta.version = VERSION; //String.format("%d.%d.%d.%d", majorVersion, minorVersion, revisionVersion, buildVersion);
-		meta.credits = CREDITS;
-		meta.authorList = Arrays.asList(EnumChatFormatting.GOLD + "" + EnumChatFormatting.BOLD + "CreativeMD",
-                                         EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "HRudyPlayZ",
-                                         EnumChatFormatting.AQUA + "" + EnumChatFormatting.BOLD + "Kotmatross");
-		meta.description = DESCRIPTION;
-		meta.url = URL;
-		meta.updateUrl = "";
-		meta.screenshots = new String[0];
-		meta.logoFile = "title.png";
-	}
+    @SidedProxy(clientSide = CLIENTPROXY, serverSide = SERVERPROXY)
+    public static CommonProxy proxy;
 
-	@Override
-	public boolean registerBus(EventBus bus, LoadController controller) {
-		bus.register(this);
-		return true;
-	}
+    public static Configuration config;
+    public static final Logger logger = LogManager.getLogger();
 
-    @Subscribe
-	public void modConstruction(FMLConstructionEvent evt){}
+    public static float rotateSpeed = 1.0F;
 
-    @Subscribe
-	public void init(FMLInitializationEvent evt) {
+    @Mod.EventHandler
+    public static void preInit(FMLPreInitializationEvent event) {
+        config = new Configuration(event.getSuggestedConfigurationFile());
+        config.load();
 
-		if (!ItemTransformer.isLite) {
-			MinecraftForge.EVENT_BUS.register(new EventHandler());
-			FMLCommonHandler.instance().bus().register(new EventHandler());
-			initFull();
-		} else {
-			MinecraftForge.EVENT_BUS.register(new EventHandlerLite());
-			FMLCommonHandler.instance().bus().register(new EventHandlerLite());
-		}
-	}
+        if (!ItemTransformer.isLite) {
 
-	@Method(modid = "creativecore")
-	public static void initFull() {
-		CreativeCorePacket.registerPacket(DropPacket.class, "IPDrop");
-		CreativeCorePacket.registerPacket(PickupPacket.class, "IPPick");
-
-		try {
-			if (!ItemTransformer.isLite && Loader.isModLoaded("ingameconfigmanager")) ItemConfigSystem.loadConfig();
-		} catch(Exception e) {}
-	}
-
-	public static Configuration config;
-	public static float rotateSpeed = 1.0F;
-
-    @Subscribe
-	public void preInit(FMLPreInitializationEvent evt) {
-		// The following overrides the mcmod.info file!
-		// Adapted from Jabelar's Magic Beans:
-		// https://github.com/jabelar/MagicBeans-1.7.10/blob/e48456397f9c6c27efce18e6b9ad34407e6bc7c7/src/main/java/com/blogspot/jabelarminecraft/magicbeans/MagicBeans.java
-
-		// stops Forge from complaining about missing mcmod.info (in case i forget it).
-		evt.getModMetadata().autogenerated = false;
-
-		// Mod name
-		evt.getModMetadata().name = EnumChatFormatting.RED + NAME;
-
-		// Mod version
-		evt.getModMetadata().version = EnumChatFormatting.GRAY + "" + EnumChatFormatting.BOLD + VERSION;
-
-		// Mod credits
-		evt.getModMetadata().credits = EnumChatFormatting.BOLD + CREDITS;
-
-		// Mod URL
-		evt.getModMetadata().url = EnumChatFormatting.GRAY + URL;
-
-		// Mod description
-		evt.getModMetadata().description = EnumChatFormatting.GRAY + DESCRIPTION;
-
-		// Mod logo
-//		if (LOGO) evt.getModMetadata().logoFile = "title.png";
-
-
-		config = new Configuration(evt.getSuggestedConfigurationFile());
-		config.load();
-
-		if (!ItemTransformer.isLite) {
-			enableItemDespawn = config.getBoolean("enableItemDespawn", "Item", true, "Whether to allow items to despawn after some times. False to disable despawn.");
-			despawnItem = config.getInt("despawn","Item",6000, 0, 2147483647, "Number of ticks an item takes to despawn (affected by enableItemDespawn).");
-			customPickup = config.getBoolean("customPickup", "Item", false, "Whether to enable a custom pickup mechanic with right click or sneaking (disables auto pickup).");
-			customThrow = config.getBoolean("customThrow", "Item", true, "Whether to enable a custom throwing mechanic when you hold the button.");
+            enableItemDespawn = config.getBoolean("enableItemDespawn", "Item", true, "Whether to allow items to despawn after some times. False to disable despawn.");
+            despawnItem = config.getInt("despawn","Item",6000, 0, 2147483647, "Number of ticks an item takes to despawn (affected by enableItemDespawn).");
+            customPickup = config.getBoolean("customPickup", "Item", false, "Whether to enable a custom pickup mechanic with right click or sneaking (disables auto pickup).");
+            customThrow = config.getBoolean("customThrow", "Item", true, "Whether to enable a custom throwing mechanic when you hold the button.");
             showPowerText = config.getBoolean("showPowerText", "Item", true, "Whether to enable a \"Power\" text above HUD");
 
-			invertBurnList = config.getBoolean("invertBurnList", "listBurn", false, "Whether to invert the burn list (so items in it will be the only ones to burn).");
-			burnList = config.getStringList("burnList","listBurn", new String[]{
-                    "minecraft:bedrock",                //IMMUNE
-                    "minecraft:obsidian",               //EXPLOSION
-                    "minecraft:netherrack",
-                    "minecraft:soul_sand",
-                    "minecraft:glowstone",
-                    "minecraft:nether_brick",
-                    "minecraft:nether_brick_fence",
-                    "minecraft:nether_brick_stairs",
-                    "minecraft:enchanting_table",
-                    "minecraft:dragon_egg",             //IMMUNE
-                    "minecraft:command_block",          //IMMUNE
-                    "minecraft:golden_apple:1",
-                    "minecraft:bucket",
-                    "minecraft:water_bucket",
-                    "minecraft:lava_bucket",
-                    "minecraft:milk_bucket",
-					"minecraft:blaze_rod",
-                    "minecraft:ghast_tear",
-                    "minecraft:nether_wart",
-                    "minecraft:blaze_powder",
-					"minecraft:magma_cream",
-                    "minecraft:fire_charge",
-                    "minecraft:netherbrick",
+            invertBurnList = config.getBoolean("invertBurnList", "listBurn", false, "Whether to invert the burn list (so items in it will be the only ones to burn).");
+            burnList = config.getStringList("burnList","listBurn", new String[]{
+                "minecraft:bedrock",                //IMMUNE
+                "minecraft:obsidian",               //EXPLOSION
+                "minecraft:netherrack",
+                "minecraft:soul_sand",
+                "minecraft:glowstone",
+                "minecraft:nether_brick",
+                "minecraft:nether_brick_fence",
+                "minecraft:nether_brick_stairs",
+                "minecraft:enchanting_table",
+                "minecraft:dragon_egg",             //IMMUNE
+                "minecraft:command_block",          //IMMUNE
+                "minecraft:golden_apple:1",
+                "minecraft:bucket",
+                "minecraft:water_bucket",
+                "minecraft:lava_bucket",
+                "minecraft:milk_bucket",
+                "minecraft:blaze_rod",
+                "minecraft:ghast_tear",
+                "minecraft:nether_wart",
+                "minecraft:blaze_powder",
+                "minecraft:magma_cream",
+                "minecraft:fire_charge",
+                "minecraft:netherbrick",
                 "Thaumcraft:blockCustomOre:2",
                 "Thaumcraft:blockCrystal:1",
                 "Thaumcraft:ItemShard:1",
@@ -198,10 +127,10 @@ public class ItemDummyContainer extends DummyModContainer {
                 "etfuturum:deepslate_thaumcraft_ore:2",
                 "hbm:item.ingot_schrabidium",
                 "hbm:item.ingot_schrabidate",
-			}, "List of items that won't burn in lava or fire. See documentation on github");
+            }, "List of items that won't burn in lava or fire. See documentation on github");
 
-			invertFloatList = config.getBoolean("invertFloatList", "listFloat", false, "Whether to invert the float list (so items in it won't be able to float).");
-			floatList = config.getStringList("floatList","listFloat", new String[]{
+            invertFloatList = config.getBoolean("invertFloatList", "listFloat", false, "Whether to invert the float list (so items in it won't be able to float).");
+            floatList = config.getStringList("floatList","listFloat", new String[]{
                 "minecraft:bedrock:fluid.tile.lava",
                 "minecraft:netherrack:fluid.tile.lava",
                 "minecraft:glowstone:fluid.tile.lava",
@@ -242,35 +171,57 @@ public class ItemDummyContainer extends DummyModContainer {
                 "etfuturum:red_netherbrick_stairs:fluid.tile.lava",
                 "etfuturum:red_netherbrick_slab:fluid.tile.lava",
                 "etfuturum:deepslate_thaumcraft_ore:2:fluid.tile.lava",
-					"minecraft:stick",
-					"plankWood",
-					"logWood",
-                    "blockCloth",
-                    "stairWood",
-					"minecraft:wooden_pickaxe:true",
-					"minecraft:wooden_shovel:true",
-					"minecraft:wooden_sword:true",
-					"minecraft:wooden_axe:true",
-					"minecraft:wooden_hoe:true",
+                "minecraft:stick",
+                "plankWood",
+                "logWood",
+                "blockCloth",
+                "stairWood",
+                "minecraft:wooden_pickaxe:true",
+                "minecraft:wooden_shovel:true",
+                "minecraft:wooden_sword:true",
+                "minecraft:wooden_axe:true",
+                "minecraft:wooden_hoe:true",
                 "minecraft:hay_block",
-			}, "List of items that will float in fluids. See documentation on github");
-		}
+            }, "List of items that will float in fluids. See documentation on github");
+        }
 
-		rotateSpeed = config.getFloat("rotateSpeed", "Item", 1.0F, 0, 100, "Speed of the item rotation.");
-		config.save();
-		//ServerPhysic.loadItemList();
-	}
+        rotateSpeed = config.getFloat("rotateSpeed", "Item", 1.0F, 0, 100, "Speed of the item rotation.");
+        config.save();
+    }
 
-    @Subscribe
-	@SideOnly(Side.CLIENT)
-	public void onRender(RenderTickEvent evt) {
-		ClientPhysic.tick = System.nanoTime();
-	}
+    @Mod.EventHandler
+    public void init(FMLInitializationEvent event) {
+        proxy.registerEvents();
+        proxy.init(this);
+        if (!ItemTransformer.isLite) {
+            MinecraftForge.EVENT_BUS.register(new EventHandler());
+            FMLCommonHandler.instance().bus().register(new EventHandler());
+            initFull();
+        } else {
+            MinecraftForge.EVENT_BUS.register(new EventHandlerLite());
+            FMLCommonHandler.instance().bus().register(new EventHandlerLite());
+        }
+    }
+    @Optional.Method(modid = "creativecore")
+    public static void initFull() {
+        CreativeCorePacket.registerPacket(DropPacket.class, "IPDrop");
+        CreativeCorePacket.registerPacket(PickupPacket.class, "IPPick");
+
+        try {
+            if (!ItemTransformer.isLite && Loader.isModLoaded("ingameconfigmanager")) ItemConfigSystem.loadConfig();
+        } catch(Exception e) {}
+    }
+
+    @Mod.EventHandler
+    @SideOnly(Side.CLIENT)
+    public void onRender(TickEvent.RenderTickEvent evt) {
+        ClientPhysic.tick = System.nanoTime();
+    }
 
     public static boolean isTCLoaded = false;
 
-    @Subscribe
-	public void postInit(FMLPostInitializationEvent evt) {
+    @Mod.EventHandler
+    public void postInit(FMLPostInitializationEvent event) {
         //This approach also acts like a hash function, initializing 2 lists at a late stage of loading so that the lists don't have to be checked constantly
         for (String itemName : burnList) {
             String modId;
@@ -330,34 +281,26 @@ public class ItemDummyContainer extends DummyModContainer {
                     } catch (NumberFormatException e) {
                         ignoremeta = Boolean.parseBoolean(parts[2]);
                     }
-//                    for(int i = 3; i < parts.length; i++) {
-//                        liquidsList.add(parts[i]); // Add all liquids to the list
-//                    }
                     liquidsList.addAll(Arrays.asList(parts).subList(3, parts.length));
                 }
                 Item item = GameRegistry.findItem(modId, itemNameOnly);
                 if (item != null) {
-                    //String[] liquidsArray = liquidsList.toArray(new String[liquidsList.size()]);
                     String[] liquidsArray = liquidsList.toArray(new String[0]);
                     ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(item, metadata, ignoremeta, liquidsArray);
                     ItemsWithMetaRegistryFloat.FloatItems.add(Item);
-                    //LogManager.getLogger().fatal("ITEM : " + item.getUnlocalizedName() + " META : " + metadata + " IGNOREMETA : " + ignoremeta + " LIQUID : " + Arrays.asList(liquidsArray));
                 }
             } else if(parts.length == 1) {
                 List<String> oredictNames = Arrays.asList(OreDictionary.getOreNames());
                 if (oredictNames.contains(itemName)) {
                     for (ItemStack oreStack : OreDictionary.getOres(itemName)) {
-                         String[] liquidsArray = liquidsList.toArray(new String[0]);
-                         //ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage(), ignoremeta, liquidsList.toArray(new String[liquidsList.size()]));
-                         if(oreStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+                        String[] liquidsArray = liquidsList.toArray(new String[0]);
+                        if(oreStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
                             ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage(), true, liquidsArray);
                             ItemsWithMetaRegistryFloat.FloatItems.add(Item);
-                            //LogManager.getLogger().fatal("ITEM : " + Objects.requireNonNull(oreStack.getItem()).getUnlocalizedName() + " META : " + oreStack.getItemDamage() + " IGNOREMETA : " + true + " LIQUID : " + Arrays.asList(liquidsArray));
-                         } else {
+                        } else {
                             ItemsWithMetaRegistryFloat.ItemWithMetaFloat Item = new ItemsWithMetaRegistryFloat.ItemWithMetaFloat(oreStack.getItem(), oreStack.getItemDamage(), ignoremeta, liquidsArray);
                             ItemsWithMetaRegistryFloat.FloatItems.add(Item);
-                            //LogManager.getLogger().fatal("ITEM : " + Objects.requireNonNull(oreStack.getItem()).getUnlocalizedName() + " META : " + oreStack.getItemDamage() + " IGNOREMETA : " + ignoremeta + " LIQUID : " + Arrays.asList(liquidsArray));
-                         }
+                        }
                     }
                 }
             }
@@ -367,22 +310,17 @@ public class ItemDummyContainer extends DummyModContainer {
             isTCLoaded = true;
         }
     }
-
-	public static Logger log = LogManager.getLogger(ItemDummyContainer.MODID); // Creates the debug log function.
-
-	public static boolean enableItemDespawn;
-	public static int despawnItem;
-	public static boolean customPickup;
-	public static boolean customThrow;
+    public static boolean enableItemDespawn;
+    public static int despawnItem;
+    public static boolean customPickup;
+    public static boolean customThrow;
 
     public static boolean showPowerText;
 
-	public static boolean invertBurnList;
-	public static String[] burnList;
+    public static boolean invertBurnList;
+    public static String[] burnList;
 
-	public static boolean invertFloatList;
-	public static String[] floatList;
+    public static boolean invertFloatList;
+    public static String[] floatList;
 
 }
-
-*/

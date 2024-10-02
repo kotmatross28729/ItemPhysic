@@ -123,21 +123,22 @@ With `B:invertFloatList=true` everything is exactly the opposite: the items spec
 
 #### TODO:
 
-| Name of TODO feature                                                                                                                                                 | Priority | State |
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|-------|
-| Fix item despawn option not working                                                                                                                                  | High     | ✅     |
-| Fix floating items spinning eternally (very fast) when they reach the surface                                                                                        | Medium   | ✅     |
-| Fix items spinning on thaumcraft pedestals (I don't know how to fix it yet. The only thing that comes to mind is to do Inject through mixins... I'll think about it) | Low      | ❌     |
+| Name of TODO feature                                                                 | Priority | State |
+|--------------------------------------------------------------------------------------|----------|-------|
+| Fix item despawn option not working                                                  | High     | ✅     |
+| Fix floating items spinning eternally (very fast) when they reach the surface        | Medium   | ✅     |
+| Add a config option to disable "Power:" text above HUD && make "Power:" translatable | Medium   | ✅     |
 
 ---
 
 ### In the future:
 
-| Name of feature                                                          | Priority | State |
-|--------------------------------------------------------------------------|----------|-------|
-| Add List of items that are explosion resistant                           | High     | ❌     |
-| Add List of items that are undestroyable (good luck getting rid of them) | High     | ❌     |
-| Add config option responsible for the resistance of items to cactus      | High     | ❌     |
-| Backport igniting items                                                  | Medium   | ❌     |
-| Backport item fall sounds                                                | Medium   | ❌     |
-| Backport show tooltip option                                             | Medium   | ❌     |
+| Name of feature                                                                                                                                                      | Priority | State |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|-------|
+| Add List of items that are explosion resistant                                                                                                                       | High     | ❌     |
+| Add List of items that are undestroyable (good luck getting rid of them)                                                                                             | High     | ❌     |
+| Add config option responsible for the resistance of items to cactus                                                                                                  | High     | ❌     |
+| Backport igniting items                                                                                                                                              | Medium   | ❌     |
+| Backport item fall sounds                                                                                                                                            | Medium   | ❌     |
+| Backport show tooltip option                                                                                                                                         | Medium   | ❌     |
+| Fix items spinning on thaumcraft pedestals (I don't know how to fix it yet. The only thing that comes to mind is to do Inject through mixins... I'll think about it) | Low      | ❌     |

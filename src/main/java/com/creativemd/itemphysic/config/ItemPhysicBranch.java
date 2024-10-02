@@ -6,8 +6,8 @@ import com.creativemd.ingameconfigmanager.api.common.branch.ConfigBranch;
 import com.creativemd.ingameconfigmanager.api.common.branch.ConfigSegmentCollection;
 import com.creativemd.ingameconfigmanager.api.common.segment.BooleanSegment;
 import com.creativemd.ingameconfigmanager.api.common.segment.IntegerSegment;
-import com.creativemd.itemphysic.ItemDummyContainer;
 
+import com.creativemd.itemphysic.ItemPhysic;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.init.Items;
@@ -42,9 +42,9 @@ public class ItemPhysicBranch extends ConfigBranch {
 
 	@Override
 	public void onRecieveFrom(boolean isServer, ConfigSegmentCollection collection) {
-		ItemDummyContainer.despawnItem = (Integer) collection.getSegmentValue("despawn");
-		ItemDummyContainer.customPickup = (Boolean) collection.getSegmentValue("pickup");
-		ItemDummyContainer.customThrow = (Boolean) collection.getSegmentValue("throw");
+        ItemPhysic.despawnItem = (Integer) collection.getSegmentValue("despawn");
+        ItemPhysic.customPickup = (Boolean) collection.getSegmentValue("pickup");
+        ItemPhysic.customThrow = (Boolean) collection.getSegmentValue("throw");
 	}
 
 }

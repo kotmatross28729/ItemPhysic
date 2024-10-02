@@ -1,6 +1,6 @@
 package com.creativemd.itemphysic.physics;
 
-import com.creativemd.itemphysic.ItemDummyContainer;
+import com.creativemd.itemphysic.ItemPhysic;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -49,7 +49,7 @@ public class ClientPhysic {
 
 	@SideOnly(Side.CLIENT)
 	public static void doRender(Entity par1Entity, double x, double y, double z, float par8, float par9) {
-		rotation = (double)(System.nanoTime()-tick)/2500000*ItemDummyContainer.rotateSpeed;
+		rotation = (double)(System.nanoTime()-tick)/2500000* ItemPhysic.rotateSpeed;
 		if (!mc.inGameHasFocus) rotation = 0;
 
 		EntityItem item = ((EntityItem)par1Entity);
