@@ -40,7 +40,7 @@ import static com.creativemd.itemphysic.ItemPhysic.VERSION;
 public class ItemPhysic {
     public static final String MODID = "itemphysic";
     public static final String NAME = "ItemPhysic";
-    public static final String VERSION = "1.2.3" + " kotmatross edition";
+    public static final String VERSION = "1.2.4" + " kotmatross edition";
     public static final String CLIENTPROXY = "com.creativemd.itemphysic.proxy.ClientProxy";
     public static final String SERVERPROXY = "com.creativemd.itemphysic.proxy.CommonProxy";
 

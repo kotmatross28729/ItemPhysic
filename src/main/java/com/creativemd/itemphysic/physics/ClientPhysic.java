@@ -22,12 +22,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.fluids.Fluid;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 import java.util.Random;
+
+import static net.minecraftforge.client.IItemRenderer.ItemRenderType.ENTITY;
+import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3D;
 
 public class ClientPhysic {
 
@@ -44,7 +50,7 @@ public class ClientPhysic {
 	@SideOnly(Side.CLIENT)
 	public static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 
-    private static Field isInWeb = ReflectionHelper.findField(Entity.class, new String[] { "isInWeb", "field_70134_J" });
+    private static final Field isInWeb = ReflectionHelper.findField(Entity.class, "isInWeb", "field_70134_J");
 
 
 	@SideOnly(Side.CLIENT)
@@ -74,8 +80,12 @@ public class ClientPhysic {
             float f6;
             float f7;
             int k;
-
-             if ((!ForgeHooksClient.renderEntityItem(item, itemstack, 0, 0, random, mc.renderEngine, BlockRenderer, b0)) && itemstack.getItemSpriteNumber() == 0 && itemstack.getItem() instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType())) {
+            
+             if ((!ForgeHooksClient.renderEntityItem(item, itemstack, 0, 0, random, mc.renderEngine, BlockRenderer, b0))
+                 && itemstack.getItemSpriteNumber() == 0
+                 && itemstack.getItem() instanceof ItemBlock
+                 && RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType()))
+             {
                 Block block = Block.getBlockFromItem(itemstack.getItem());
 
                 if (RenderItem.renderInFrame) {
@@ -83,7 +93,9 @@ public class ClientPhysic {
                     GL11.glTranslatef(0.0F, 0.05F, 0.0F);
                     GL11.glTranslatef(0.0F, 0.09F, 0.0F);
                     GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-                } else {
+                }
+
+                else {
                 	GL11.glRotatef(item.rotationYaw, 0.0F, 1.0F, 0.0F);
                 	GL11.glRotatef(item.rotationPitch, 1.0F, 0.0F, 0.0F);
                 }
@@ -131,12 +143,12 @@ public class ClientPhysic {
                              try {
                                  if (isInWeb.getBoolean(item))
                                      rotation /= 50;
-                             } catch (IllegalArgumentException | IllegalAccessException e) {}
+                             } catch (IllegalArgumentException | IllegalAccessException ignored) {}
                                 item.rotationPitch += rotation;
                     	}
                     }
 
-                    BlockRenderer.renderBlockAsItem(block, itemstack.getItemDamage(), 1.0F);
+                    BlockRenderer.renderBlockAsItem(block, itemstack.getItemDamage(), 1.0F); //BLOCK, NOT TESR
                     GL11.glPopMatrix();
                 }
 
@@ -161,9 +173,10 @@ public class ClientPhysic {
                             f6 = (float)(k >> 8 & 255) / 255.0F;
                             f7 = (float)(k & 255) / 255.0F;
                             GL11.glColor4f(f5, f6, f7, 1.0F);
-                            renderDroppedItem(item, iicon1, b0, par9, f5, f6, f7, j);
+                            renderDroppedItem(item, iicon1, b0, par9, f5, f6, f7, j); //Seems that don't work
                         }
-                        else renderDroppedItem(item, iicon1, b0, par9, 1.0F, 1.0F, 1.0F,  j);
+                        else
+                           renderDroppedItem(item, iicon1, b0, par9, 1.0F, 1.0F, 1.0F,  j); //Seems that don't work
                     }
                 } else {
                     if (itemstack.getItem() instanceof ItemCloth) {
@@ -186,9 +199,10 @@ public class ClientPhysic {
                         float f4 = (float)(i >> 16 & 255) / 255.0F;
                         f5 = (float)(i >> 8 & 255) / 255.0F;
                         f6 = (float)(i & 255) / 255.0F;
-                        renderDroppedItem(item, iicon, b0, par9, f4, f5, f6);
+                        renderDroppedItem(item, iicon, b0, par9, f4, f5, f6); //ITEM, NOT TESR
                     }
-                    else renderDroppedItem(item, iicon, b0, par9, 1.0F, 1.0F, 1.0F);
+                    else
+                        renderDroppedItem(item, iicon, b0, par9, 1.0F, 1.0F, 1.0F); //ITEM, NOT TESR
 
                     if (itemstack.getItem() instanceof ItemCloth) GL11.glDisable(GL11.GL_BLEND);
                 }
@@ -260,7 +274,7 @@ public class ClientPhysic {
                     try {
                         if (isInWeb.getBoolean(item))
                             rotation /= 50;
-                    } catch (IllegalArgumentException | IllegalAccessException e) {}
+                    } catch (IllegalArgumentException | IllegalAccessException ignored) {}
                     item.rotationPitch += rotation;
 	            }
             }
@@ -342,7 +356,7 @@ public class ClientPhysic {
                     GL11.glTranslatef(f10, f16, f17);
                 }
 
-                if (!ItemRenderer.renderInFrame) GL11.glRotatef(180.0F - RenderManager.instance.playerViewY, 0.0F, 1.0F, 0.0F);
+                if (!RenderItem.renderInFrame) GL11.glRotatef(180.0F - RenderManager.instance.playerViewY, 0.0F, 1.0F, 0.0F);
 
                 GL11.glColor4f(par5, par6, par7, 1.0F);
                 tessellator.startDrawingQuads();
