@@ -49,6 +49,8 @@ A minecraft forge mod that adds some physic to thrown items.
 
 - Backported items slowing down in the cobweb
 
+- Added a config option to disable "Power:" text above HUD && make "Power:" translatable
+
 ---
 
 ## Documentation on lists:
@@ -121,24 +123,29 @@ With `B:invertFloatList=true` everything is exactly the opposite: the items spec
 
 ---
 
+
 #### TODO:
 
-| Name of TODO feature                                                                 | Priority | State |
-|--------------------------------------------------------------------------------------|----------|-------|
-| Fix item despawn option not working                                                  | High     | ✅     |
-| Fix floating items spinning eternally (very fast) when they reach the surface        | Medium   | ✅     |
-| Add a config option to disable "Power:" text above HUD && make "Power:" translatable | Medium   | ✅     |
+| Name of TODO feature                                                                           | Priority | State |
+|------------------------------------------------------------------------------------------------|----------|-------|
+| Fix item despawn option not working                                                            | High     | ✅     |
+| Fix floating items spinning eternally (very fast) when they reach the surface                  | Medium   | ✅     |
+| Add a config option to disable "Power:" text above HUD && make "Power:" translatable           | Medium   | ✅     |
+| Fix explosive/hydroactive hazards from hbm's ntm not working (also check gravity in ntm space) | High     | ❌     |
+| Fix item textures not being hidden if the item has a 3D model                                  | High     | ❌     |
+| Add List of items that are explosion resistant                                                 | High     | ❌     |
+| Add List of items that are undestroyable (good luck getting rid of them)                       | High     | ❌     |
+| Add config option responsible for the resistance of items to cactus                            | High     | ❌     |
 
 ---
 
 ### In the future:
 
-| Name of feature                                                                                                                                                      | Priority | State |
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|-------|
-| Add List of items that are explosion resistant                                                                                                                       | High     | ❌     |
-| Add List of items that are undestroyable (good luck getting rid of them)                                                                                             | High     | ❌     |
-| Add config option responsible for the resistance of items to cactus                                                                                                  | High     | ❌     |
-| Backport igniting items                                                                                                                                              | Medium   | ❌     |
-| Backport item fall sounds                                                                                                                                            | Medium   | ❌     |
-| Backport show tooltip option                                                                                                                                         | Medium   | ❌     |
-| Fix items spinning on thaumcraft pedestals (I don't know how to fix it yet. The only thing that comes to mind is to do Inject through mixins... I'll think about it) | Low      | ❌     |
+| Name of feature                            | Priority | State |
+|--------------------------------------------|----------|-------|
+| Backport igniting items                    | Medium   | ❌     |
+| Backport item fall sounds                  | Medium   | ❌     |
+| Backport show tooltip option               | Medium   | ❌     |
+| Switch to mixins                           | Low      | ❌     |
+| Fix items spinning on thaumcraft pedestals | Low      | ❌     |
+
