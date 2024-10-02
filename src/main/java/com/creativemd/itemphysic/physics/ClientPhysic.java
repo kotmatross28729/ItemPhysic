@@ -25,6 +25,7 @@ import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.fluids.Fluid;
+import org.apache.logging.log4j.LogManager;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -80,8 +81,9 @@ public class ClientPhysic {
             float f6;
             float f7;
             int k;
-            
-             if ((!ForgeHooksClient.renderEntityItem(item, itemstack, 0, 0, random, mc.renderEngine, BlockRenderer, b0))
+
+            IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, ENTITY);
+            if ((!ForgeHooksClient.renderEntityItem(item, itemstack, 0, 0, random, mc.renderEngine, BlockRenderer, b0))
                  && itemstack.getItemSpriteNumber() == 0
                  && itemstack.getItem() instanceof ItemBlock
                  && RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType()))
@@ -153,7 +155,7 @@ public class ClientPhysic {
                 }
 
                 if (block.getRenderBlockPass() > 0) GL11.glDisable(GL11.GL_BLEND);
-            } else {
+            } else if(customRenderer == null) {
                 float f5;
 
                 if (/*itemstack.getItemSpriteNumber() == 1 &&*/ itemstack.getItem().requiresMultipleRenderPasses()) {
