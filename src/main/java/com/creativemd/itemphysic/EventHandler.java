@@ -146,8 +146,7 @@ public class EventHandler {
 
                 EntityItem entity = getEntityItem(distance, mc.thePlayer);
 
-                //TODO showTooltip backport
-                if (entity != null && mc.inGameHasFocus) {
+                if (entity != null && mc.inGameHasFocus && ItemPhysic.showPickupTooltip) {
                     int space = 15;
                     List<String> list = new ArrayList<>();
                     try {

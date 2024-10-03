@@ -79,6 +79,9 @@ A minecraft forge mod that adds some physic to thrown items.
 
 - Fix items spinning on Mo' Creatures ants body
 
+
+- Backported show tooltip option
+
 ---
 
 ## Documentation on lists:
@@ -172,7 +175,7 @@ With `B:invertFloatList=true` everything is exactly the opposite: the items spec
 | Fix items spinning on Mo' Creatures ants body                                        | Medium   | ✅     |
 | Backport igniting items                                                              | Low      | ❌     |
 | Backport item fall sounds                                                            | Low      | ❌     |
-| Backport show tooltip option                                                         | Low      | ❌     |
+| Backport show tooltip option                                                         | Low      | ✅     |
 
 
 

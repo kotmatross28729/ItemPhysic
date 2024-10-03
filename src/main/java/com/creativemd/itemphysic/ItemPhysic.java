@@ -258,6 +258,7 @@ public class ItemPhysic {
             }, "List of items that are resistant to sulfuric acid from hbm's ntm");
         }
 
+        showPickupTooltip = config.getBoolean("showPickupTooltip", "Item", true, "Whether to display the name and description of an item when hovering over it.");
         rotateSpeed = config.getFloat("rotateSpeed", "Item", 1.0F, 0, 100, "Speed of the item rotation.");
         config.save();
     }
@@ -509,6 +510,8 @@ public class ItemPhysic {
 
     public static boolean invertSulfuricAcidList;
     public static String[] sulfuricAcidList;
+
+    public static boolean showPickupTooltip = true;
 
 
 }
