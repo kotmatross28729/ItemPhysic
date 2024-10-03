@@ -30,14 +30,14 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.IFluidBlock;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 public class ServerPhysic {
-
-	public static Random random = new Random();
+    public static Random random = new Random();
     //For transformer
 	public static void update(EntityItem item) {
 		ItemStack stack = item.getDataWatcher().getWatchableObjectItemStack(10);
@@ -80,7 +80,7 @@ public class ServerPhysic {
             item.moveEntity(item.motionX, item.motionY, item.motionZ);
             boolean flag = (int)item.prevPosX != (int)item.posX || (int)item.prevPosY != (int)item.posY || (int)item.prevPosZ != (int)item.posZ;
 
-            if (flag || item.ticksExisted % 25 == 0) {
+            if (flag || item.ticksExisted % 20 == 0) {
                 if (item.worldObj.getBlock(MathHelper.floor_double(item.posX), MathHelper.floor_double(item.posY), MathHelper.floor_double(item.posZ)).getMaterial() == Material.lava && canItemBurn(stack)) {
                 	item.playSound("random.fizz", 0.4F, 2.0F + random.nextFloat() * 0.4F);
 
@@ -115,7 +115,12 @@ public class ServerPhysic {
                     searchForOtherItemsNearby(item);
             }
 
-            if (item.onGround) f = item.worldObj.getBlock(MathHelper.floor_double(item.posX), MathHelper.floor_double(item.boundingBox.minY) - 1, MathHelper.floor_double(item.posZ)).slipperiness * 0.98F;
+            if (item.onGround && item.prevPosY != item.posY && ItemPhysic.enableFallSounds) {
+                    item.playSound("dig.cloth", 1F, (float) Math.random() + 1);
+            }
+
+            if (item.onGround)
+                f = item.worldObj.getBlock(MathHelper.floor_double(item.posX), MathHelper.floor_double(item.boundingBox.minY) - 1, MathHelper.floor_double(item.posZ)).slipperiness * 0.98F;
 
             item.motionX *= (double)f;
             item.motionZ *= (double)f;

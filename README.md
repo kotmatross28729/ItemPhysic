@@ -85,6 +85,9 @@ A minecraft forge mod that adds some physic to thrown items.
 
 - Backported igniting items
 
+
+- Backported item fall sounds
+
 ---
 
 ## Documentation on lists:
@@ -195,7 +198,7 @@ With `B:invertIgnitingItemsList=true` everything is exactly the opposite: the it
 ---
 
 
-#### TODO:
+#### ~~TODO:~~
 
 | Name of TODO feature                                                                 | Priority | State |
 |--------------------------------------------------------------------------------------|----------|-------|
@@ -211,7 +214,7 @@ With `B:invertIgnitingItemsList=true` everything is exactly the opposite: the it
 | Fix items spinning on Thaumcraft pedestals                                           | Medium   | ✅     |
 | Fix items spinning on Mo' Creatures ants body                                        | Medium   | ✅     |
 | Backport igniting items                                                              | Low      | ✅     |
-| Backport item fall sounds                                                            | Low      | ❌     |
+| Backport item fall sounds                                                            | Low      | ✅     |
 | Backport show tooltip option                                                         | Low      | ✅     |
 
 

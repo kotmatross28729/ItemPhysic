@@ -83,6 +83,7 @@ public class ItemPhysic {
             customThrow = config.getBoolean("customThrow", "Item", true, "Whether to enable a custom throwing mechanic when you hold the button.");
             showPowerText = config.getBoolean("showPowerText", "Item", true, "Whether to enable a \"Power\" text above HUD");
             disableCactusDamage = config.getBoolean("disableCactusDamage", "Item", true, "Whether to disable cactus damage for items");
+            enableFallSounds = config.getBoolean("enableFallSounds", "Item", true, "Whether to allow items to make a sound when they fall.");
         }
         showPickupTooltip = config.getBoolean("showPickupTooltip", "Item", true, "Whether to display the name and description of an item when hovering over it.");
         rotateSpeed = config.getFloat("rotateSpeed", "Item", 1.0F, 0, 100, "Speed of the item rotation.");
@@ -402,4 +403,6 @@ public class ItemPhysic {
     public static boolean showPowerText;
     public static boolean disableCactusDamage;
     public static boolean showPickupTooltip = true;
+
+    public static boolean enableFallSounds = true;
 }
