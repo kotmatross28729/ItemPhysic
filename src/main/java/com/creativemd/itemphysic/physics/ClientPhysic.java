@@ -96,9 +96,7 @@ public class ClientPhysic {
                     GL11.glTranslatef(0.0F, 0.05F, 0.0F);
                     GL11.glTranslatef(0.0F, 0.09F, 0.0F);
                     GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-                }
-
-                else {
+                } else if(item.prevPosY != item.posY || item.onGround) {
                 	GL11.glRotatef(item.rotationYaw, 0.0F, 1.0F, 0.0F);
                 	GL11.glRotatef(item.rotationPitch, 1.0F, 0.0F, 0.0F);
                 }
@@ -158,7 +156,6 @@ public class ClientPhysic {
                 if (block.getRenderBlockPass() > 0) GL11.glDisable(GL11.GL_BLEND);
             } else if(customRenderer == null) {
                 float f5;
-
                 if (/*itemstack.getItemSpriteNumber() == 1 &&*/ itemstack.getItem().requiresMultipleRenderPasses()) {
                     if (RenderItem.renderInFrame) {
                         GL11.glScalef(0.5128205F, 0.5128205F, 0.5128205F);
@@ -288,13 +285,14 @@ public class ClientPhysic {
             if (RenderItem.renderInFrame) {
             	GL11.glTranslatef(0.0F, 0.09F, 0.0F);
                 GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
-            } else {
+            } else if(item.prevPosY != item.posY || item.onGround) {
             	GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
             	GL11.glRotatef(item.rotationYaw, 0.0F, 0.0F, 1.0F);
             }
 
             if (!Double.isNaN(item.posX) && !Double.isNaN(item.posY) && !Double.isNaN(item.posZ) && item.worldObj != null && !RenderItem.renderInFrame && item.age != 0) {
-	            if (item.onGround) item.rotationPitch = 0;
+	            if (item.onGround || item.prevPosY == item.posY)
+                    item.rotationPitch = 0;
 	            else {
                     double rotation = ClientPhysic.rotation*2;
                     Fluid fluid = ServerPhysic.getFluid(item);

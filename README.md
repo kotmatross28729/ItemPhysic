@@ -73,6 +73,12 @@ A minecraft forge mod that adds some physic to thrown items.
 
 - Added List of items that are sulfuric acid-resistant (hbm's ntm)
 
+
+- Fixed items spinning on Thaumcraft pedestals
+
+
+- Fix items spinning on Mo' Creatures ants body
+
 ---
 
 ## Documentation on lists:
@@ -151,8 +157,8 @@ With `B:invertFloatList=true` everything is exactly the opposite: the items spec
 
 #### TODO:
 
-| Name of TODO feature                                                                 | Priority | State   |
-|--------------------------------------------------------------------------------------|----------|---------|
+| Name of TODO feature                                                                 | Priority | State |
+|--------------------------------------------------------------------------------------|----------|-------|
 | Fix floating items spinning eternally (very fast) when they reach the surface        | High     | ✅     |
 | Fix item despawn option not working                                                  | High     | ✅     |
 | Fix explosive/hydroactive hazards from hbm's ntm not working                         | High     | ✅     |
@@ -162,9 +168,8 @@ With `B:invertFloatList=true` everything is exactly the opposite: the items spec
 | Add config option responsible for the resistance of items to cactus                  | High     | ✅     |
 | Add List of items that are sulfuric acid-resistant (hbm's ntm)                       | High     | ✅     |
 | Add a config option to disable "Power:" text above HUD && make "Power:" translatable | Medium   | ✅     |
-| Switch to mixins - fix {[0][1]}                                                      | Medium   | ❌     |
-| [0]Fix items spinning on Thaumcraft pedestals                                        | Medium   | ❌     |
-| [1]Fix items spinning on Mo' Creatures ants body                                     | Medium   | ❌     |
+| Fix items spinning on Thaumcraft pedestals                                           | Medium   | ✅     |
+| Fix items spinning on Mo' Creatures ants body                                        | Medium   | ✅     |
 | Backport igniting items                                                              | Low      | ❌     |
 | Backport item fall sounds                                                            | Low      | ❌     |
 | Backport show tooltip option                                                         | Low      | ❌     |
