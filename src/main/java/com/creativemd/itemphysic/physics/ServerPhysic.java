@@ -1,10 +1,12 @@
 package com.creativemd.itemphysic.physics;
 
 import com.creativemd.itemphysic.ItemPhysic;
+import com.creativemd.itemphysic.ItemPhysicConfig;
 import com.creativemd.itemphysic.ItemTransformer;
 import com.creativemd.itemphysic.list.ItemsWithMetaRegistryBurn;
 import com.creativemd.itemphysic.list.ItemsWithMetaRegistryExplosion;
 import com.creativemd.itemphysic.list.ItemsWithMetaRegistryFloat;
+import com.creativemd.itemphysic.list.ItemsWithMetaRegistryIgniting;
 import com.creativemd.itemphysic.list.ItemsWithMetaRegistrySulfuricAcid;
 import com.creativemd.itemphysic.list.ItemsWithMetaRegistryUndestroyable;
 import com.hbm.lib.ModDamageSource;
@@ -36,36 +38,6 @@ import java.util.Random;
 public class ServerPhysic {
 
 	public static Random random = new Random();
-
-//	public static ArrayList swimItem = new ArrayList(); //Can be Material, Block, Item, Stack, String(Contains)
-//	public static ArrayList burnItem = new ArrayList(); //Can be Material, Block, Item, Stack, String(Contains)
-//    public static Item getItem(String ItemID) {
-//        // This function will return an item from its string ID (ex: minecraft:blaze_rod).
-//        // If the modId is omitted, it will look directly in the minecraft namespace.
-//        String modId = "minecraft";
-//        String name = null;
-//
-//        if (ItemID.indexOf(":") != -1) {
-//            String[] nameSplit = ItemID.split(":");
-//            modId = nameSplit[0];
-//            name = nameSplit[1];
-//        } else name = ItemID;
-//
-//        return GameRegistry.findItem(modId, name);
-//    }
-//
-//    public static void loadItemList() {
-//        for (int i = 0; i < ItemDummyContainer.floatList.length; i += 1) {
-//            Item x = getItem(ItemDummyContainer.floatList[i]);
-//            if (x != null) swimItem.add(x);
-//        }
-//
-//        for (int i = 0; i < ItemDummyContainer.burnList.length; i += 1) {
-//            Item x = getItem(ItemDummyContainer.burnList[i]);
-//            if (x != null) burnItem.add(x);
-//        }
-//    }
-
     //For transformer
 	public static void update(EntityItem item) {
 		ItemStack stack = item.getDataWatcher().getWatchableObjectItemStack(10);
@@ -112,10 +84,35 @@ public class ServerPhysic {
                 if (item.worldObj.getBlock(MathHelper.floor_double(item.posX), MathHelper.floor_double(item.posY), MathHelper.floor_double(item.posZ)).getMaterial() == Material.lava && canItemBurn(stack)) {
                 	item.playSound("random.fizz", 0.4F, 2.0F + random.nextFloat() * 0.4F);
 
-                    for(int zahl = 0; zahl < 100; zahl++) item.worldObj.spawnParticle("smoke", item.posX, item.posY, item.posZ, (random.nextFloat()*0.1)-0.05, 0.2*random.nextDouble(), (random.nextFloat()*0.1)-0.05);
+                    for(int zahl = 0; zahl < 100; zahl++)
+                        item.worldObj.spawnParticle("smoke", item.posX, item.posY, item.posZ, (random.nextFloat()*0.1)-0.05, 0.2*random.nextDouble(), (random.nextFloat()*0.1)-0.05);
                 }
 
-                if (!item.worldObj.isRemote) searchForOtherItemsNearby(item);
+                if (item.onGround &&
+                    canItemIgnite(stack) &&
+                    (
+                    item.worldObj.getBlock(
+                        MathHelper.floor_double(item.posX),
+                        MathHelper.floor_double(item.posY),
+                        MathHelper.floor_double(item.posZ))
+                        .getMaterial() == Material.air ||
+                        item.worldObj.getBlock(
+                            MathHelper.floor_double(item.posX),
+                            MathHelper.floor_double(item.posY),
+                            MathHelper.floor_double(item.posZ))
+                        .getMaterial() == Material.plants
+                    ) && item.worldObj.rand.nextInt(100) <= getIgnitingChance(stack)
+                ) {
+                    item.worldObj.setBlock(
+                        MathHelper.floor_double(item.posX),
+                        MathHelper.floor_double(item.posY),
+                        MathHelper.floor_double(item.posZ),
+                        getIgnitingBlock(stack),
+                        getIgnitingBlockMeta(stack),
+                        3);
+                    }
+                if (!item.worldObj.isRemote)
+                    searchForOtherItemsNearby(item);
             }
 
             if (item.onGround) f = item.worldObj.getBlock(MathHelper.floor_double(item.posX), MathHelper.floor_double(item.boundingBox.minY) - 1, MathHelper.floor_double(item.posZ)).slipperiness * 0.98F;
@@ -368,7 +365,6 @@ public class ServerPhysic {
 		}
 	}
 
-
     //For transformer
 	public static boolean isItemBurning(EntityItem item) {
 //        boolean flag = item.worldObj != null && item.worldObj.isRemote;
@@ -381,7 +377,7 @@ public class ServerPhysic {
     public static boolean swim = false;
     public static boolean canItemSwim(ItemStack stack, Fluid fluid) {
         if (stack != null) {
-            if(!ItemPhysic.invertFloatList) {
+            if(!ItemPhysicConfig.invertFloatList) {
                 swim = false;
                 for (ItemsWithMetaRegistryFloat.ItemWithMetaFloat itemWithMetaFloat : ItemsWithMetaRegistryFloat.FloatItems) {
                     for(int i = 0; i < itemWithMetaFloat.liquids.length; i++){
@@ -424,7 +420,7 @@ public class ServerPhysic {
     public static boolean burn = true;
 	public static boolean canItemBurn(ItemStack stack) {
         if (stack != null) {
-            if(!ItemPhysic.invertBurnList) {
+            if(!ItemPhysicConfig.invertBurnList) {
                 burn = true;
                 for (ItemsWithMetaRegistryBurn.ItemWithMetaBurn itemWithMetaBurn : ItemsWithMetaRegistryBurn.BurnItems) {
                     if(!itemWithMetaBurn.ignoremeta) {
@@ -459,7 +455,7 @@ public class ServerPhysic {
     public static boolean explosion = true;
     public static boolean canItemExplode(ItemStack stack) {
         if (stack != null) {
-            if(!ItemPhysic.invertExplosionList) {
+            if(!ItemPhysicConfig.invertExplosionList) {
                 explosion = true;
                 for (ItemsWithMetaRegistryExplosion.ItemsWithMetaExplosion itemWithMetaExplosion : ItemsWithMetaRegistryExplosion.ExplosionItems) {
                     if(!itemWithMetaExplosion.ignoremeta) {
@@ -494,7 +490,7 @@ public class ServerPhysic {
     public static boolean undestroyable = false;
     public static boolean isItemUndestroyable(ItemStack stack) {
         if (stack != null) {
-            if(!ItemPhysic.invertUndestroyableList) {
+            if(!ItemPhysicConfig.invertUndestroyableList) {
                 undestroyable = false;
                 for (ItemsWithMetaRegistryUndestroyable.ItemWithMetaUndestroyable itemWithMetaUndestroyable : ItemsWithMetaRegistryUndestroyable.UndestroyableItems) {
                     if(!itemWithMetaUndestroyable.ignoremeta) {
@@ -529,7 +525,7 @@ public class ServerPhysic {
     public static boolean dissolve = true;
     public static boolean canItemDissolve(ItemStack stack) {
         if (stack != null) {
-            if(!ItemPhysic.invertSulfuricAcidList) {
+            if(!ItemPhysicConfig.invertSulfuricAcidList) {
                 dissolve = true;
                 for (ItemsWithMetaRegistrySulfuricAcid.ItemsWithMetaSulfuricAcid itemWithMetaSulfuricAcid : ItemsWithMetaRegistrySulfuricAcid.SulfuricAcidItems) {
                     if(!itemWithMetaSulfuricAcid.ignoremeta) {
@@ -561,30 +557,85 @@ public class ServerPhysic {
         return true;
     }
 
-//    public static boolean contains(ArrayList list, ItemStack stack) {
-//        if (stack == null || stack.getItem() == null) return false;
-//
-//        Object object = stack.getItem();
-//        Material material = null;
-//
-//        if (object instanceof ItemBlock) {
-//            object = Block.getBlockFromItem((Item) object);
-//            material = ((Block) object).getMaterial();
-//        }
-//
-//        int[] ores = OreDictionary.getOreIDs(stack);
-//
-//        for (int i = 0; i < list.size(); i++) {
-//            if (list.get(i) instanceof ItemStack && ItemStack.areItemStacksEqual(stack, (ItemStack) list.get(i)))  return true;
-//            if (list.get(i) == object) return true;
-//            if (list.get(i) == material) return true;
-//
-//            if (list.get(i) instanceof String)
-//                for (int j = 0; j < ores.length; j++) {
-//                    if (OreDictionary.getOreName(ores[j]).contains((CharSequence) list.get(i))) return true;
-//                }
-//        }
-//        return false;
-//    }
+    public static boolean ignite = false;
+    public static boolean canItemIgnite(ItemStack stack) {
+        if (stack != null) {
+            if(!ItemPhysicConfig.invertIgnitingItemsList) {
+                ignite = false;
+                for (ItemsWithMetaRegistryIgniting.ItemWithMetaIgniting ItemWithMetaIgniting : ItemsWithMetaRegistryIgniting.IgnitingItems) {
+                    if(!ItemWithMetaIgniting.ignoremetaItem) {
+                        if(stack.getItem() == ItemWithMetaIgniting.item && stack.getItemDamage() == ItemWithMetaIgniting.metadataItem) {
+                            ignite = true;
+                        }
+                    } else {
+                        if(stack.getItem() == ItemWithMetaIgniting.item) {
+                            ignite = true;
+                        }
+                    }
+                }
+            } else {
+                ignite = true;
+                for (ItemsWithMetaRegistryIgniting.ItemWithMetaIgniting ItemWithMetaIgniting : ItemsWithMetaRegistryIgniting.IgnitingItems) {
+                    if(!ItemWithMetaIgniting.ignoremetaItem) {
+                        if(stack.getItem() == ItemWithMetaIgniting.item && stack.getItemDamage() == ItemWithMetaIgniting.metadataItem) {
+                            ignite = false;
+                        }
+                    } else {
+                        if(stack.getItem() == ItemWithMetaIgniting.item) {
+                            ignite = false;
+                        }
+                    }
+                }
+            }
+            return ignite;
+        }
+        return true;
+    }
 
+    public static Block block = Blocks.fire;
+    public static Block getIgnitingBlock(ItemStack stack) {
+        for (ItemsWithMetaRegistryIgniting.ItemWithMetaIgniting ItemWithMetaIgniting : ItemsWithMetaRegistryIgniting.IgnitingItems) {
+            if(!ItemWithMetaIgniting.ignoremetaItem) {
+                if(stack.getItem() == ItemWithMetaIgniting.item && stack.getItemDamage() == ItemWithMetaIgniting.metadataItem) {
+                    block = ItemWithMetaIgniting.block;
+                }
+            } else {
+                if(stack.getItem() == ItemWithMetaIgniting.item) {
+                    block = ItemWithMetaIgniting.block;
+                }
+            }
+        }
+        return block;
+    }
+    public static int blockMeta = 0;
+    public static int getIgnitingBlockMeta(ItemStack stack) {
+        for (ItemsWithMetaRegistryIgniting.ItemWithMetaIgniting ItemWithMetaIgniting : ItemsWithMetaRegistryIgniting.IgnitingItems) {
+            if(!ItemWithMetaIgniting.ignoremetaItem) {
+                if(stack.getItem() == ItemWithMetaIgniting.item && stack.getItemDamage() == ItemWithMetaIgniting.metadataItem) {
+                    blockMeta = ItemWithMetaIgniting.metadataBlock;
+                }
+            } else {
+                if(stack.getItem() == ItemWithMetaIgniting.item) {
+                    blockMeta = ItemWithMetaIgniting.metadataBlock;
+                }
+            }
+        }
+        return blockMeta;
+    }
+
+    public static int igniteChance = 10;
+    public static int getIgnitingChance(ItemStack stack) {
+        for (ItemsWithMetaRegistryIgniting.ItemWithMetaIgniting ItemWithMetaIgniting : ItemsWithMetaRegistryIgniting.IgnitingItems) {
+            if(!ItemWithMetaIgniting.ignoremetaItem) {
+                if(stack.getItem() == ItemWithMetaIgniting.item && stack.getItemDamage() == ItemWithMetaIgniting.metadataItem) {
+                    igniteChance = ItemWithMetaIgniting.igniteChance;
+                }
+            } else {
+                if(stack.getItem() == ItemWithMetaIgniting.item) {
+                    igniteChance = ItemWithMetaIgniting.igniteChance;
+                }
+            }
+        }
+        return igniteChance;
+    }
 }

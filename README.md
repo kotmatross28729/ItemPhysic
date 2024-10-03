@@ -82,6 +82,9 @@ A minecraft forge mod that adds some physic to thrown items.
 
 - Backported show tooltip option
 
+
+- Backported igniting items
+
 ---
 
 ## Documentation on lists:
@@ -152,6 +155,40 @@ With `B:invertFloatList=true` everything is exactly the opposite: the items spec
 
 **Note when specifying fluids: if it's vanilla water/lava, use `fluid.tile.water` or `fluid.tile.lava`. When specifying mod fluids, just use `fluid.fluidname` (without .tile)**
 
+### ignitingItemsList:
+
+**Minimum syntax:**
+* `modidItem:itemname:modidBlock:blockname:chance`
+  - *Example:* `minecraft:torch:minecraft:fire:10`
+
+Means item "itemname" from "modidItem" will ignite block underneath it with the block "blockname" from "modidBlock" with a chance of "chance"
+
+May be difficult to understand, but it's much simpler:
+
+modidItem:itemname - an item from some mod. Let's call it "A"
+
+modidBlock:blockname - a block from some mod. Let's call it "B"
+
+chance - a number, from 1 to 100
+
+So, if an item “A” falls to the ground, then with this chance it can replace the block in which it is located with a block “B” (the replacement can only occur if the item “A” is in an air or grass block)
+
+**Maximum syntax:**
+
+* 1)`modidItem:itemname:metadataItem:modidBlock:blockname:metadataBlock:chance`
+  - *Example:* `minecraft:red_flower:6:minecraft:stained_glass_pane:5:100`
+
+OR
+
+* 2)`modidItem:itemname:ignoremetaItem:modidBlock:blockname:ignoremetaItem:chance`
+  - *Example:* `minecraft:golden_sword:true:minecraft:stained_glass_pane:7:100`
+
+everything is the same, but now with indication of metadata/its absence (default metadata is 0)
+
+With `B:invertIgnitingItemsList=true` everything is exactly the opposite: the items specified in this list will be the only ones that will NOT ignite blocks (all other items will ignite blocks with vanilla fire)
+
+**EXTRA syntax:**
+* `oredict:modidBlock:blockname:chance`
 
 ### For explosionList / undestroyableList / sulfuricAcidList the syntax is exactly the same as for burnList
 
@@ -173,7 +210,7 @@ With `B:invertFloatList=true` everything is exactly the opposite: the items spec
 | Add a config option to disable "Power:" text above HUD && make "Power:" translatable | Medium   | ✅     |
 | Fix items spinning on Thaumcraft pedestals                                           | Medium   | ✅     |
 | Fix items spinning on Mo' Creatures ants body                                        | Medium   | ✅     |
-| Backport igniting items                                                              | Low      | ❌     |
+| Backport igniting items                                                              | Low      | ✅     |
 | Backport item fall sounds                                                            | Low      | ❌     |
 | Backport show tooltip option                                                         | Low      | ✅     |
 
