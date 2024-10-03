@@ -151,26 +151,23 @@ With `B:invertFloatList=true` everything is exactly the opposite: the items spec
 
 #### TODO:
 
-| Name of TODO feature                                                                 | Priority | State |
-|--------------------------------------------------------------------------------------|----------|-------|
+| Name of TODO feature                                                                 | Priority | State   |
+|--------------------------------------------------------------------------------------|----------|---------|
+| Fix floating items spinning eternally (very fast) when they reach the surface        | High     | ✅     |
 | Fix item despawn option not working                                                  | High     | ✅     |
-| Fix floating items spinning eternally (very fast) when they reach the surface        | Medium   | ✅     |
-| Add a config option to disable "Power:" text above HUD && make "Power:" translatable | Medium   | ✅     |
 | Fix explosive/hydroactive hazards from hbm's ntm not working                         | High     | ✅     |
 | Fix item textures not being hidden if the item has a 3D model                        | High     | ✅     |
 | Add List of items that are explosion resistant                                       | High     | ✅     |
 | Add List of items that are undestroyable (good luck getting rid of them)             | High     | ✅     |
 | Add config option responsible for the resistance of items to cactus                  | High     | ✅     |
 | Add List of items that are sulfuric acid-resistant (hbm's ntm)                       | High     | ✅     |
-| Backport igniting items                                                              | Medium   | ❌     |
-| Backport item fall sounds                                                            | Medium   | ❌     |
-| Backport show tooltip option                                                         | Medium   | ❌     |
----
+| Add a config option to disable "Power:" text above HUD && make "Power:" translatable | Medium   | ✅     |
+| Switch to mixins - fix {[0][1]}                                                      | Medium   | ❌     |
+| [0]Fix items spinning on Thaumcraft pedestals                                        | Medium   | ❌     |
+| [1]Fix items spinning on Mo' Creatures ants body                                     | Medium   | ❌     |
+| Backport igniting items                                                              | Low      | ❌     |
+| Backport item fall sounds                                                            | Low      | ❌     |
+| Backport show tooltip option                                                         | Low      | ❌     |
 
-### In the future:
 
-| Name of feature                            | Priority | State |
-|--------------------------------------------|----------|-------|
-| Switch to mixins                           | Low      | ❌     |
-| Fix items spinning on thaumcraft pedestals | Low      | ❌     |
 
